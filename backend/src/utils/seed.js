@@ -1,5 +1,13 @@
 const bcrypt = require('bcryptjs');
-const { sequelize, User, Customer, Product, SalesChallan, ChallanItem } = require('../models');
+const {
+  sequelize,
+  User,
+  Customer,
+  CustomerFollowUp,
+  Product,
+  SalesChallan,
+  ChallanItem
+} = require('../models');
 const generateChallanNo = require('./generateChallanNo');
 
 const demoUsers = [
@@ -66,6 +74,24 @@ const run = async () => {
         createdBy: admin.id
       }
     });
+
+    const followUpCount = await CustomerFollowUp.count({ where: { customerId: customer.id } });
+    if (followUpCount === 0) {
+      await CustomerFollowUp.bulkCreate([
+        {
+          customerId: customer.id,
+          note: 'Shared updated wholesale price list and expected order timeline.',
+          followUpDate: new Date(),
+          createdBy: admin.id
+        },
+        {
+          customerId: customer.id,
+          note: 'Client asked for 7-day credit terms review.',
+          followUpDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+          createdBy: admin.id
+        }
+      ]);
+    }
 
     const [productA] = await Product.findOrCreate({
       where: { sku: 'SKU-BOLT-001' },

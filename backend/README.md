@@ -21,3 +21,12 @@ Creates demo users for roles: admin, sales, warehouse, accounts.
 - `POST /api/auth/login`
 - `POST /api/auth/register` (admin only)
 - `GET /api/auth/me`
+
+## Customer Endpoints
+
+- `POST /api/customers`
+- `GET /api/customers?page=&limit=&search=&status=&customerType=`
+- `GET /api/customers/:id`
+- `PUT /api/customers/:id`
+- `POST /api/customers/:id/followups`
+- `DELETE /api/customers/:id` (admin only, soft delete)

@@ -9,6 +9,9 @@ import DashboardPage from './pages/DashboardPage';
 import CustomersPage from './pages/CustomersPage';
 import CustomerFormPage from './pages/CustomerFormPage';
 import CustomerDetailPage from './pages/CustomerDetailPage';
+import ProductsPage from './pages/ProductsPage';
+import ProductFormPage from './pages/ProductFormPage';
+import ProductDetailPage from './pages/ProductDetailPage';
 import PlaceholderPage from './pages/PlaceholderPage';
 import ForbiddenPage from './pages/ForbiddenPage';
 import NotFoundPage from './pages/NotFoundPage';
@@ -64,7 +67,38 @@ const App = () => {
                     </PrivateRoute>
                   )}
                 />
-                <Route path="products" element={<PlaceholderPage title="Products" />} />
+                <Route
+                  path="products"
+                  element={(
+                    <PrivateRoute allowedRoles={['admin', 'warehouse']}>
+                      <ProductsPage />
+                    </PrivateRoute>
+                  )}
+                />
+                <Route
+                  path="products/new"
+                  element={(
+                    <PrivateRoute allowedRoles={['admin', 'warehouse']}>
+                      <ProductFormPage />
+                    </PrivateRoute>
+                  )}
+                />
+                <Route
+                  path="products/:id"
+                  element={(
+                    <PrivateRoute allowedRoles={['admin', 'warehouse']}>
+                      <ProductDetailPage />
+                    </PrivateRoute>
+                  )}
+                />
+                <Route
+                  path="products/:id/edit"
+                  element={(
+                    <PrivateRoute allowedRoles={['admin', 'warehouse']}>
+                      <ProductFormPage />
+                    </PrivateRoute>
+                  )}
+                />
                 <Route path="challans" element={<PlaceholderPage title="Challans" />} />
                 <Route path="users" element={<PlaceholderPage title="User Management" />} />
                 <Route path="*" element={<Navigate to="/404" />} />

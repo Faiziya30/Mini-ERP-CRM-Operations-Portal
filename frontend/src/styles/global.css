@@ -248,6 +248,16 @@ button {
   margin-bottom: var(--space-4);
 }
 
+.filter-check {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  padding: 0 0.75rem;
+}
+
 .table-wrap {
   overflow-x: auto;
 }
@@ -268,6 +278,15 @@ button {
 .actions-cell {
   display: inline-flex;
   gap: var(--space-2);
+}
+
+.low-stock-row {
+  background: color-mix(in srgb, var(--danger) 8%, transparent);
+}
+
+.low-stock-badge {
+  margin-left: var(--space-2);
+  background: color-mix(in srgb, var(--danger) 16%, transparent);
 }
 
 .status-lead {

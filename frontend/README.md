@@ -23,3 +23,8 @@ React + Vite dashboard frontend.
    - Add/edit customer form with validation
    - Customer detail with follow-up timeline + add note
    - Admin-only delete with confirmation dialog
+- Module 3 complete:
+   - Product list with search, category filter, low-stock toggle
+   - Add/edit product form with validation
+   - Product detail page with stock movement log
+   - Stock adjustment modal (IN/OUT + reason)

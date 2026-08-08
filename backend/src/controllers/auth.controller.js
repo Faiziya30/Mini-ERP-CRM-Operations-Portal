@@ -28,8 +28,19 @@ const me = async (req, res, next) => {
   }
 };
 
+const listUsers = async (req, res, next) => {
+  try {
+    const users = await authService.listUsers();
+    return sendSuccess(res, users, 'Users fetched successfully');
+  } catch (error) {
+    return next(error);
+  }
+};
+
 module.exports = {
   register,
   login,
-  me
+  me,
+  listUsers
 };
+

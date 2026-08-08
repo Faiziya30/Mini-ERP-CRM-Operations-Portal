@@ -74,8 +74,17 @@ const getCurrentUser = async (userId) => {
   return sanitizeUser(user);
 };
 
+const listUsers = async () => {
+  const users = await User.findAll({
+    order: [['createdAt', 'DESC']]
+  });
+  return users.map(sanitizeUser);
+};
+
 module.exports = {
   registerUser,
   loginUser,
-  getCurrentUser
+  getCurrentUser,
+  listUsers
 };
+

@@ -5,9 +5,10 @@ const menuItems = [
   { label: 'Dashboard', path: '/', roles: ['admin', 'sales', 'warehouse', 'accounts'] },
   { label: 'Customers', path: '/customers', roles: ['admin', 'sales'] },
   { label: 'Products', path: '/products', roles: ['admin', 'warehouse'] },
-  { label: 'Challans', path: '/challans', roles: ['admin', 'sales', 'accounts'] },
+  { label: 'Challans', path: '/challans', roles: ['admin', 'sales', 'warehouse', 'accounts'] },
   { label: 'Users', path: '/users', roles: ['admin'] }
 ];
+
 
 const Sidebar = () => {
   const { user } = useAuth();

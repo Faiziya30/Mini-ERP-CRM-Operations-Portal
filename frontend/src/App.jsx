@@ -12,7 +12,10 @@ import CustomerDetailPage from './pages/CustomerDetailPage';
 import ProductsPage from './pages/ProductsPage';
 import ProductFormPage from './pages/ProductFormPage';
 import ProductDetailPage from './pages/ProductDetailPage';
-import PlaceholderPage from './pages/PlaceholderPage';
+import ChallansPage from './pages/ChallansPage';
+import ChallanFormPage from './pages/ChallanFormPage';
+import ChallanDetailPage from './pages/ChallanDetailPage';
+import UsersPage from './pages/UsersPage';
 import ForbiddenPage from './pages/ForbiddenPage';
 import NotFoundPage from './pages/NotFoundPage';
 
@@ -99,8 +102,46 @@ const App = () => {
                     </PrivateRoute>
                   )}
                 />
-                <Route path="challans" element={<PlaceholderPage title="Challans" />} />
-                <Route path="users" element={<PlaceholderPage title="User Management" />} />
+                <Route
+                  path="challans"
+                  element={(
+                    <PrivateRoute allowedRoles={['admin', 'sales', 'warehouse', 'accounts']}>
+                      <ChallansPage />
+                    </PrivateRoute>
+                  )}
+                />
+                <Route
+                  path="challans/new"
+                  element={(
+                    <PrivateRoute allowedRoles={['admin', 'sales']}>
+                      <ChallanFormPage />
+                    </PrivateRoute>
+                  )}
+                />
+                <Route
+                  path="challans/:id"
+                  element={(
+                    <PrivateRoute allowedRoles={['admin', 'sales', 'warehouse', 'accounts']}>
+                      <ChallanDetailPage />
+                    </PrivateRoute>
+                  )}
+                />
+                <Route
+                  path="challans/:id/edit"
+                  element={(
+                    <PrivateRoute allowedRoles={['admin', 'sales']}>
+                      <ChallanFormPage />
+                    </PrivateRoute>
+                  )}
+                />
+                <Route
+                  path="users"
+                  element={(
+                    <PrivateRoute allowedRoles={['admin']}>
+                      <UsersPage />
+                    </PrivateRoute>
+                  )}
+                />
                 <Route path="*" element={<Navigate to="/404" />} />
               </Route>
 

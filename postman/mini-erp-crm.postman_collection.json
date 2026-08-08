@@ -69,6 +69,113 @@
           }
         }
       ]
+    },
+    {
+      "name": "Customers",
+      "item": [
+        {
+          "name": "Create Customer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{baseUrl}}/customers",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Nitin Verma\",\n  \"mobile\": \"9876500011\",\n  \"email\": \"nitin@vermatools.com\",\n  \"businessName\": \"Verma Tools\",\n  \"gstNumber\": \"\",\n  \"customerType\": \"Wholesale\",\n  \"address\": \"Laxmi Nagar, Delhi\",\n  \"status\": \"Lead\",\n  \"followUpDate\": \"2026-08-20\",\n  \"notes\": \"Needs initial catalog and price slab\"\n}"
+            }
+          }
+        },
+        {
+          "name": "List Customers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{baseUrl}}/customers?page=1&limit=10&search=&status=&customerType="
+          }
+        },
+        {
+          "name": "Get Customer Detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{baseUrl}}/customers/1"
+          }
+        },
+        {
+          "name": "Update Customer",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{baseUrl}}/customers/1",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Active\",\n  \"notes\": \"Converted from lead after first order discussion\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Add Follow-up",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{baseUrl}}/customers/1/followups",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note\": \"Client requested revised transport charges\",\n  \"followUpDate\": \"2026-08-22\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Soft Delete Customer (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{baseUrl}}/customers/1"
+          }
+        }
+      ]
     }
   ]
 }

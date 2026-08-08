@@ -30,3 +30,12 @@ Creates demo users for roles: admin, sales, warehouse, accounts.
 - `PUT /api/customers/:id`
 - `POST /api/customers/:id/followups`
 - `DELETE /api/customers/:id` (admin only, soft delete)
+
+## Product & Inventory Endpoints
+
+- `POST /api/products`
+- `GET /api/products?page=&limit=&search=&category=&lowStock=`
+- `GET /api/products/:id`
+- `PUT /api/products/:id`
+- `GET /api/products/:id/stock-log`
+- `POST /api/products/:id/stock` (IN/OUT transaction-safe adjustment)

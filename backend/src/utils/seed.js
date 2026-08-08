@@ -5,6 +5,7 @@ const {
   Customer,
   CustomerFollowUp,
   Product,
+  StockMovement,
   SalesChallan,
   ChallanItem
 } = require('../models');
@@ -118,6 +119,40 @@ const run = async () => {
         warehouseLocation: 'A-2'
       }
     });
+
+    const movementCount = await StockMovement.count();
+    if (movementCount === 0) {
+      await StockMovement.bulkCreate([
+        {
+          productId: productA.id,
+          quantityChanged: 200,
+          movementType: 'IN',
+          reason: 'Initial stock onboarding',
+          createdBy: admin.id
+        },
+        {
+          productId: productA.id,
+          quantityChanged: 20,
+          movementType: 'OUT',
+          reason: 'Sample dispatch',
+          createdBy: admin.id
+        },
+        {
+          productId: productB.id,
+          quantityChanged: 300,
+          movementType: 'IN',
+          reason: 'Initial stock onboarding',
+          createdBy: admin.id
+        },
+        {
+          productId: productB.id,
+          quantityChanged: 40,
+          movementType: 'OUT',
+          reason: 'Early customer dispatch',
+          createdBy: admin.id
+        }
+      ]);
+    }
 
     const existingChallan = await SalesChallan.findOne();
     if (!existingChallan) {

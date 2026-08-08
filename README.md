@@ -21,8 +21,10 @@ Portfolio-grade full-stack mini ERP + CRM portal for a wholesale/distribution co
 - Step 2: Core Sequelize models + associations completed
 - Step 3: Auth module (login/register/me + role middleware + seed users) completed
 - Step 4: Customers module API completed (CRUD, pagination, search, follow-ups, soft delete)
+- Step 5: Products + Inventory module API completed (search/filter, low-stock filter, stock logs, transaction-safe stock adjustment)
 - Frontend shell for auth, layout, role-based menu, and theme toggle completed
 - Customers frontend pages completed (list, add/edit, detail timeline, follow-up notes)
+- Products frontend pages completed (list, add/edit, detail, low-stock indicators, stock adjustment modal)
 
 ## Quick Start
 

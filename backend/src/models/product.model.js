@@ -37,8 +37,13 @@ module.exports = (sequelize) => {
     warehouseLocation: {
       type: DataTypes.STRING(120),
       allowNull: true
+    },
+    imageUrl: {
+      type: DataTypes.STRING(255),
+      allowNull: true
     }
   }, {
+
     tableName: 'products',
     indexes: [
       { unique: true, fields: ['sku'] },

@@ -119,10 +119,38 @@ const ProductsPage = () => {
                 const lowStock = Number(product.currentStock) <= Number(product.minStockAlert);
                 return (
                   <tr key={product.id} className={lowStock ? 'low-stock-row' : ''}>
-                    <td>{product.name}</td>
+                    <td>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                        {product.imageUrl ? (
+                          <img
+                            src={product.imageUrl}
+                            alt={product.name}
+                            style={{ width: '32px', height: '32px', borderRadius: '4px', objectFit: 'cover' }}
+                          />
+                        ) : (
+                          <div
+                            style={{
+                              width: '32px',
+                              height: '32px',
+                              borderRadius: '4px',
+                              background: 'var(--surface-2)',
+                              border: '1px solid var(--border)',
+                              display: 'grid',
+                              placeItems: 'center',
+                              fontSize: '0.7rem',
+                              color: 'var(--text-muted)'
+                            }}
+                          >
+                            📦
+                          </div>
+                        )}
+                        <strong>{product.name}</strong>
+                      </div>
+                    </td>
                     <td>{product.sku}</td>
                     <td>{product.category}</td>
-                    <td>{Number(product.unitPrice).toFixed(2)}</td>
+                    <td>₹{Number(product.unitPrice).toFixed(2)}</td>
+
                     <td>
                       {product.currentStock}
                       {lowStock ? <span className="badge low-stock-badge">Low</span> : null}

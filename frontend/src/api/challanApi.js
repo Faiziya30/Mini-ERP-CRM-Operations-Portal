@@ -29,3 +29,10 @@ export const getChallanApi = async (id) => {
   const { data } = await api.get(`/challans/${id}`);
   return data;
 };
+
+export const downloadChallanPdfApi = async (id) => {
+  const response = await api.get(`/challans/${id}/pdf`, {
+    responseType: 'blob'
+  });
+  return response.data;
+};

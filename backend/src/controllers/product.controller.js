@@ -55,11 +55,27 @@ const adjustStock = async (req, res, next) => {
   }
 };
 
+const uploadImage = async (req, res, next) => {
+  try {
+    if (!req.file) {
+      const error = new Error('No image file provided');
+      error.statusCode = 400;
+      throw error;
+    }
+    const imageUrl = `/uploads/products/${req.file.filename}`;
+    return sendSuccess(res, { imageUrl }, 'Product image uploaded successfully', 201);
+  } catch (error) {
+    return next(error);
+  }
+};
+
 module.exports = {
   createProduct,
   listProducts,
   getProductById,
   updateProduct,
   getStockLog,
-  adjustStock
+  adjustStock,
+  uploadImage
 };
+

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import { getChallanApi, confirmChallanApi, cancelChallanApi } from '../api/challanApi';
+import { getChallanApi, confirmChallanApi, cancelChallanApi, downloadChallanPdfApi } from '../api/challanApi';
 import useToast from '../hooks/useToast';
 import useAuth from '../hooks/useAuth';
 
@@ -14,8 +14,29 @@ const ChallanDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
+  const [pdfDownloading, setPdfDownloading] = useState(false);
   const [stockErrors, setStockErrors] = useState([]);
   const [showCancelModal, setShowCancelModal] = useState(false);
+
+  const handleDownloadPdf = async () => {
+    setPdfDownloading(true);
+    try {
+      const blob = await downloadChallanPdfApi(id);
+      const url = window.URL.createObjectURL(new Blob([blob], { type: 'application/pdf' }));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `Challan-${challan?.challanNumber || id}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      showToast('PDF downloaded successfully!', 'success');
+    } catch (err) {
+      showToast(err.response?.data?.message || 'Failed to download PDF', 'error');
+    } finally {
+      setPdfDownloading(false);
+    }
+  };
 
   const fetchChallan = async () => {
     setLoading(true);
@@ -118,8 +139,17 @@ const ChallanDetailPage = () => {
             Back
           </Link>
           <button type="button" className="btn btn-secondary" onClick={handlePrint}>
-            Print / PDF
+            Print Slip
           </button>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            disabled={pdfDownloading}
+            onClick={handleDownloadPdf}
+          >
+            {pdfDownloading ? 'Downloading...' : '📥 Download PDF'}
+          </button>
+
 
           {challan.status === 'Draft' && canEditOrConfirm ? (
             <>

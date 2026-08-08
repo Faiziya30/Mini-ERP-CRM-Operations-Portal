@@ -38,9 +38,11 @@ const createProduct = async (payload) => {
     unitPrice: payload.unitPrice,
     currentStock: payload.currentStock ?? 0,
     minStockAlert: payload.minStockAlert ?? 0,
-    warehouseLocation: payload.warehouseLocation || null
+    warehouseLocation: payload.warehouseLocation || null,
+    imageUrl: payload.imageUrl || null
   });
 };
+
 
 const listProducts = async ({ page, limit, search, category, lowStock }) => {
   const { offset, page: safePage, limit: safeLimit } = parsePagination(page, limit);

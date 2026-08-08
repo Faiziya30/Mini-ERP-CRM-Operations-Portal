@@ -11,7 +11,7 @@ Client (React SPA)
 Express Router (`routes/`)
    │
    ▼
-Validation Middleware (`validators/` + `middlewares/validate.js`)
+Validation & File Upload Middlewares (`validators/` + `middlewares/upload.js`)
    │
    ▼
 Authentication & RBAC Middleware (`middlewares/auth.js` & `roleCheck.js`)
@@ -20,7 +20,7 @@ Authentication & RBAC Middleware (`middlewares/auth.js` & `roleCheck.js`)
 Controller Layer (`controllers/`) — Handles HTTP req/res translation only
    │
    ▼
-Service Layer (`services/`) — Core business rules & Sequelize DB transactions
+Service Layer (`services/`) — Core business rules, PDF Generation, & DB transactions
    │
    ▼
 Models (`models/`) — Sequelize ORM definitions & associations
@@ -36,9 +36,13 @@ MySQL Database (ACID Storage)
 3. **Middlewares (`src/middlewares/`)**:
    - `auth.js`: Verifies JWT tokens from `Authorization: Bearer <token>` header.
    - `roleCheck.js`: Role gate enforcing RBAC (`admin`, `sales`, `warehouse`, `accounts`).
+   - `upload.js`: `Multer` file upload handler storing images in `/uploads/products` with size and extension validation.
    - `errorHandler.js`: Centralized error handler returning consistent JSON error shapes.
 4. **Controllers (`src/controllers/`)**: Accepts sanitized request data, delegates processing to the Service layer, and invokes `apiResponse.js` standard success/error helpers.
-5. **Services (`src/services/`)**: Encapsulates core domain business logic. Manages atomic database transactions (`sequelize.transaction`) for stock adjustments, challan confirmations, and restocking cancellations.
+5. **Services (`src/services/`)**:
+   - `challan.service.js`: Atomic database transactions (`sequelize.transaction`) for stock deduction & restocking.
+   - `pdf.service.js`: Server-side PDFKit document streaming for PDF dispatch receipts.
+   - `dashboard.service.js`: Real-time SQL aggregations for live overview metrics.
 6. **Models (`src/models/`)**: Defines Sequelize entities, schema column types, validation constraints, and model relationships (`hasMany`, `belongsTo`).
 
 ---
@@ -71,35 +75,7 @@ To prevent race conditions, dirty reads, and negative stock anomalies during sim
 
 ---
 
-## Response & Error Standardisation
+## PDF Generation & File Storage Architecture
 
-All API responses follow a uniform JSON response structure:
-
-### Success Response
-```json
-{
-  "success": true,
-  "message": "Operation completed successfully",
-  "data": { ... },
-  "meta": {
-    "total": 42,
-    "page": 1,
-    "totalPages": 5,
-    "limit": 10
-  }
-}
-```
-
-### Error Response
-```json
-{
-  "success": false,
-  "message": "Validation failed / Insufficient stock",
-  "errors": [
-    {
-      "field": "items",
-      "message": "Product #4 has insufficient stock"
-    }
-  ]
-}
-```
+- **PDF Generation**: Server-side document rendering powered by `pdfkit`, streaming PDF binaries directly to HTTP responses (`Content-Type: application/pdf`).
+- **Product Image Storage**: Handled via `multer` storing files to `/uploads/products` and served statically via Express (`app.use('/uploads', express.static(...))`).

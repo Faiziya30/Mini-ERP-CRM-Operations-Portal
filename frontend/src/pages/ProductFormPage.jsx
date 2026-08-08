@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { createProductApi, getProductApi, updateProductApi } from '../api/productApi';
+import { createProductApi, getProductApi, updateProductApi, uploadProductImageApi } from '../api/productApi';
 import useToast from '../hooks/useToast';
 
 const initialForm = {
@@ -10,19 +10,21 @@ const initialForm = {
   unitPrice: '',
   currentStock: 0,
   minStockAlert: 0,
-  warehouseLocation: ''
+  warehouseLocation: '',
+  imageUrl: ''
 };
 
 const ProductFormPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { pushToast } = useToast();
+  const showToast = useToast();
 
   const isEdit = useMemo(() => Boolean(id), [id]);
   const [formData, setFormData] = useState(initialForm);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(isEdit);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     if (!isEdit) {
@@ -42,10 +44,11 @@ const ProductFormPage = () => {
           unitPrice: product.unitPrice || '',
           currentStock: product.currentStock ?? 0,
           minStockAlert: product.minStockAlert ?? 0,
-          warehouseLocation: product.warehouseLocation || ''
+          warehouseLocation: product.warehouseLocation || '',
+          imageUrl: product.imageUrl || ''
         });
       } catch (apiError) {
-        pushToast(apiError.response?.data?.message || 'Failed to load product', 'error');
+        showToast(apiError.response?.data?.message || 'Failed to load product', 'error');
         navigate('/products');
       } finally {
         setLoading(false);
@@ -53,12 +56,29 @@ const ProductFormPage = () => {
     };
 
     fetchProduct();
-  }, [id, isEdit, navigate, pushToast]);
+  }, [id, isEdit, navigate, showToast]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     setErrors((prev) => ({ ...prev, [name]: '' }));
+  };
+
+  const handleImageFileChange = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const res = await uploadProductImageApi(file);
+      const uploadedUrl = res.data?.imageUrl;
+      setFormData((prev) => ({ ...prev, imageUrl: uploadedUrl }));
+      showToast('Product image uploaded successfully', 'success');
+    } catch (err) {
+      showToast(err.response?.data?.message || 'Failed to upload image', 'error');
+    } finally {
+      setUploading(false);
+    }
   };
 
   const validate = () => {
@@ -96,14 +116,14 @@ const ProductFormPage = () => {
     try {
       if (isEdit) {
         await updateProductApi(id, payload);
-        pushToast('Product updated successfully', 'success');
+        showToast('Product updated successfully', 'success');
       } else {
         await createProductApi(payload);
-        pushToast('Product created successfully', 'success');
+        showToast('Product created successfully', 'success');
       }
       navigate('/products');
     } catch (apiError) {
-      pushToast(apiError.response?.data?.message || 'Save failed', 'error');
+      showToast(apiError.response?.data?.message || 'Save failed', 'error');
     } finally {
       setSaving(false);
     }
@@ -128,26 +148,48 @@ const ProductFormPage = () => {
 
       <form className="form-grid" onSubmit={handleSubmit}>
         <label className="form-group">
-          <span>Name</span>
-          <input className="input" name="name" value={formData.name} onChange={handleChange} />
+          <span>Product Image</span>
+          <input
+            type="file"
+            accept="image/*"
+            className="input"
+            onChange={handleImageFileChange}
+            disabled={uploading}
+          />
+          {uploading ? <small className="muted">Uploading image...</small> : null}
+          {formData.imageUrl ? (
+            <div style={{ marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <img
+                src={formData.imageUrl}
+                alt="Product preview"
+                style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '4px' }}
+              />
+              <small className="muted">Image uploaded!</small>
+            </div>
+          ) : null}
+        </label>
+
+        <label className="form-group">
+          <span>Name *</span>
+          <input className="input" name="name" value={formData.name} onChange={handleChange} required />
           {errors.name ? <small className="error-text">{errors.name}</small> : null}
         </label>
 
         <label className="form-group">
-          <span>SKU</span>
-          <input className="input" name="sku" value={formData.sku} onChange={handleChange} />
+          <span>SKU *</span>
+          <input className="input" name="sku" value={formData.sku} onChange={handleChange} required />
           {errors.sku ? <small className="error-text">{errors.sku}</small> : null}
         </label>
 
         <label className="form-group">
-          <span>Category</span>
-          <input className="input" name="category" value={formData.category} onChange={handleChange} />
+          <span>Category *</span>
+          <input className="input" name="category" value={formData.category} onChange={handleChange} required />
           {errors.category ? <small className="error-text">{errors.category}</small> : null}
         </label>
 
         <label className="form-group">
-          <span>Unit Price</span>
-          <input className="input" type="number" min="0" step="0.01" name="unitPrice" value={formData.unitPrice} onChange={handleChange} />
+          <span>Unit Price (₹) *</span>
+          <input className="input" type="number" min="0" step="0.01" name="unitPrice" value={formData.unitPrice} onChange={handleChange} required />
           {errors.unitPrice ? <small className="error-text">{errors.unitPrice}</small> : null}
         </label>
 
@@ -158,18 +200,18 @@ const ProductFormPage = () => {
         </label>
 
         <label className="form-group">
-          <span>Min Stock Alert</span>
+          <span>Min Stock Alert Threshold</span>
           <input className="input" type="number" min="0" name="minStockAlert" value={formData.minStockAlert} onChange={handleChange} />
           {errors.minStockAlert ? <small className="error-text">{errors.minStockAlert}</small> : null}
         </label>
 
         <label className="form-group form-group-wide">
           <span>Warehouse Location</span>
-          <input className="input" name="warehouseLocation" value={formData.warehouseLocation} onChange={handleChange} />
+          <input className="input" name="warehouseLocation" value={formData.warehouseLocation} onChange={handleChange} placeholder="e.g. Aisle 3, Rack B" />
         </label>
 
         <div className="form-actions">
-          <button type="submit" className="btn btn-primary" disabled={saving}>
+          <button type="submit" className="btn btn-primary" disabled={saving || uploading}>
             {saving ? 'Saving...' : isEdit ? 'Update Product' : 'Create Product'}
           </button>
         </div>

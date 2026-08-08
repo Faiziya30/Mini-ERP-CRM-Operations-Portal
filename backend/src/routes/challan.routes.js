@@ -62,5 +62,13 @@ router.get(
   challanController.getChallanById
 );
 
+router.get(
+  '/:id/pdf',
+  authorize('admin', 'sales', 'warehouse', 'accounts'),
+  challanIdValidator,
+  validateRequest,
+  challanController.generatePdf
+);
+
 
 module.exports = router;

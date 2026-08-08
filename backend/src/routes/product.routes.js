@@ -11,9 +11,18 @@ const {
   adjustStockValidator
 } = require('../validators/product.validator');
 
+const { uploadProductImage } = require('../middlewares/upload');
+
 const router = express.Router();
 
 router.use(authenticate);
+
+router.post(
+  '/upload-image',
+  authorize('admin', 'warehouse'),
+  uploadProductImage.single('image'),
+  productController.uploadImage
+);
 
 router.post(
   '/',
@@ -22,6 +31,7 @@ router.post(
   validateRequest,
   productController.createProduct
 );
+
 
 router.get(
   '/',

@@ -55,11 +55,24 @@ const getChallanById = async (req, res, next) => {
   }
 };
 
+const pdfService = require('../services/pdf.service');
+
+const generatePdf = async (req, res, next) => {
+  try {
+    const challan = await challanService.getChallanById(Number(req.params.id));
+    return pdfService.generateChallanPdf(challan, res);
+  } catch (error) {
+    return next(error);
+  }
+};
+
 module.exports = {
   createChallan,
   updateChallan,
   confirmChallan,
   cancelChallan,
   listChallans,
-  getChallanById
+  getChallanById,
+  generatePdf
 };
+

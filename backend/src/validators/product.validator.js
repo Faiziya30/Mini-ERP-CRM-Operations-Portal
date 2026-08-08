@@ -7,7 +7,8 @@ const createProductValidator = [
   body('unitPrice').isFloat({ gt: 0 }).withMessage('unitPrice must be greater than 0'),
   body('currentStock').optional().isInt({ min: 0 }).withMessage('currentStock must be >= 0'),
   body('minStockAlert').optional().isInt({ min: 0 }).withMessage('minStockAlert must be >= 0'),
-  body('warehouseLocation').optional({ checkFalsy: true }).isString().withMessage('warehouseLocation must be text')
+  body('warehouseLocation').optional({ checkFalsy: true }).isString().withMessage('warehouseLocation must be text'),
+  body('imageUrl').optional({ checkFalsy: true }).isString().withMessage('imageUrl must be text')
 ];
 
 const updateProductValidator = [
@@ -18,8 +19,10 @@ const updateProductValidator = [
   body('unitPrice').optional().isFloat({ gt: 0 }).withMessage('unitPrice must be greater than 0'),
   body('currentStock').optional().isInt({ min: 0 }).withMessage('currentStock must be >= 0'),
   body('minStockAlert').optional().isInt({ min: 0 }).withMessage('minStockAlert must be >= 0'),
-  body('warehouseLocation').optional({ checkFalsy: true }).isString().withMessage('warehouseLocation must be text')
+  body('warehouseLocation').optional({ checkFalsy: true }).isString().withMessage('warehouseLocation must be text'),
+  body('imageUrl').optional({ checkFalsy: true }).isString().withMessage('imageUrl must be text')
 ];
+
 
 const productIdValidator = [
   param('id').isInt({ min: 1 }).withMessage('Invalid product id')

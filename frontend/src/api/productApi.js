@@ -29,3 +29,12 @@ export const adjustProductStockApi = async (id, payload) => {
   const { data } = await api.post(`/products/${id}/stock`, payload);
   return data;
 };
+
+export const uploadProductImageApi = async (file) => {
+  const formData = new FormData();
+  formData.append('image', file);
+  const { data } = await api.post('/products/upload-image', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  });
+  return data;
+};

@@ -35,40 +35,54 @@ const LoginPage = () => {
   return (
     <div className="auth-wrap fade-in">
       <div className="auth-card">
-        <h1 className="auth-title">Mini ERP + CRM</h1>
-        <p className="auth-subtitle">Sign in to continue to the operations portal.</p>
+        <h1 className="auth-title font-display">Mini ERP + CRM</h1>
+        <p className="auth-subtitle">
+          Sign in to continue to operations portal
+          <span className="subtitle-amber-underline" />
+        </p>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="email">Email</label>
+            <label htmlFor="email" className="label">Email Address</label>
             <input
               id="email"
-              className="input"
+              className="input font-mono"
               type="email"
               name="email"
               autoComplete="email"
+              placeholder="user@mini-erp.local"
               value={formData.email}
               onChange={handleChange}
               required
             />
           </div>
           <div className="form-group">
-            <label htmlFor="password">Password</label>
+            <label htmlFor="password" className="label">Password</label>
             <input
               id="password"
-              className="input"
+              className="input font-mono"
               type="password"
               name="password"
               autoComplete="current-password"
+              placeholder="••••••••"
               value={formData.password}
               onChange={handleChange}
               required
             />
           </div>
-          {error ? <div className="error-text">{error}</div> : null}
-          <button type="submit" className="btn btn-primary" disabled={submitting}>
-            {submitting ? 'Signing in...' : 'Sign In'}
+          {error ? <div className="error-text mb-2">{error}</div> : null}
+          <button type="submit" className="btn btn-primary btn-block" disabled={submitting}>
+            {submitting ? 'Authenticating...' : 'Sign In to Operations'}
           </button>
         </form>
+
+        <div className="demo-credentials-box mt-3">
+          <span className="eyebrow-label">DEMO ACCOUNTS</span>
+          <div className="demo-creds-grid font-mono">
+            <div>admin@mini-erp.local / Admin@123</div>
+            <div>sales@mini-erp.local / Sales@123</div>
+            <div>warehouse@mini-erp.local / Warehouse@123</div>
+          </div>
+        </div>
       </div>
     </div>
   );

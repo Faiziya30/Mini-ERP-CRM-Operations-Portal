@@ -2,8 +2,11 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { listChallansApi } from '../api/challanApi';
 import { listCustomersApi } from '../api/customerApi';
+import StatusBadge from '../components/StatusBadge';
 
 const ChallansPage = () => {
+
+
   const [filters, setFilters] = useState({
     status: '',
     customerId: '',
@@ -120,22 +123,23 @@ const ChallansPage = () => {
               </tr>
             </thead>
             <tbody>
-              {challans.map((challan) => (
+              {challans.map((challan, idx) => (
                 <tr key={challan.id}>
-                  <td>{challan.challanNumber}</td>
+                  <td className="font-mono bold-text">{challan.challanNumber}</td>
                   <td>{challan.customer?.name || '-'} ({challan.customer?.businessName || '-'})</td>
-                  <td>{challan.totalQuantity}</td>
-                  <td><span className={`badge status-${challan.status.toLowerCase()}`}>{challan.status}</span></td>
-                  <td>{new Date(challan.createdAt).toLocaleDateString()}</td>
+                  <td className="num-col font-mono">{challan.totalQuantity} units</td>
+                  <td><StatusBadge status={challan.status} index={idx} /></td>
+                  <td className="font-mono">{new Date(challan.createdAt).toLocaleDateString()}</td>
                   <td className="actions-cell">
-                    <Link className="btn btn-ghost" to={`/challans/${challan.id}`}>View</Link>
+                    <Link className="btn btn-ghost btn-sm font-mono" to={`/challans/${challan.id}`}>View</Link>
                     {challan.status === 'Draft' ? (
-                      <Link className="btn btn-ghost" to={`/challans/${challan.id}/edit`}>Edit</Link>
+                      <Link className="btn btn-ghost btn-sm font-mono" to={`/challans/${challan.id}/edit`}>Edit</Link>
                     ) : null}
                   </td>
                 </tr>
               ))}
             </tbody>
+
           </table>
         </div>
       )}

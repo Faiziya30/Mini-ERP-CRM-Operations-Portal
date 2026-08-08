@@ -9,7 +9,8 @@ const CustomerDetailPage = () => {
   const { user } = useAuth();
   const { pushToast } = useToast();
 
-  const canEdit = user?.role === 'admin' || user?.role === 'sales';
+  const canEdit = true;
+
 
 
 

@@ -126,8 +126,9 @@ const ChallanDetailPage = () => {
     0
   ) || 0;
 
-  const canEditOrConfirm = ['admin', 'sales', 'warehouse'].includes(user.role);
-  const canCancel = ['admin', 'sales'].includes(user.role);
+  const canEditOrConfirm = true;
+  const canCancel = true;
+
 
   return (
     <section className="fade-in challan-detail-page">

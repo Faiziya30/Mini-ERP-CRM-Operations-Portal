@@ -16,7 +16,8 @@ const ProductDetailPage = () => {
   const [error, setError] = useState('');
   const [stockModalOpen, setStockModalOpen] = useState(false);
 
-  const canAdjust = user?.role === 'admin' || user?.role === 'warehouse';
+  const canAdjust = true;
+
 
   const fetchData = async () => {
     setLoading(true);

@@ -16,7 +16,7 @@ router.use(authenticate);
 
 router.post(
   '/',
-  authorize('admin', 'sales'),
+  authorize('admin', 'sales', 'warehouse', 'accounts'),
   createChallanValidator,
   validateRequest,
   challanController.createChallan
@@ -24,7 +24,7 @@ router.post(
 
 router.put(
   '/:id',
-  authorize('admin', 'sales'),
+  authorize('admin', 'sales', 'warehouse', 'accounts'),
   updateChallanValidator,
   validateRequest,
   challanController.updateChallan
@@ -32,7 +32,7 @@ router.put(
 
 router.post(
   '/:id/confirm',
-  authorize('admin', 'sales', 'warehouse'),
+  authorize('admin', 'sales', 'warehouse', 'accounts'),
   challanIdValidator,
   validateRequest,
   challanController.confirmChallan
@@ -40,7 +40,7 @@ router.post(
 
 router.post(
   '/:id/cancel',
-  authorize('admin', 'sales'),
+  authorize('admin', 'sales', 'warehouse', 'accounts'),
   challanIdValidator,
   validateRequest,
   challanController.cancelChallan
@@ -69,6 +69,5 @@ router.get(
   validateRequest,
   challanController.generatePdf
 );
-
 
 module.exports = router;

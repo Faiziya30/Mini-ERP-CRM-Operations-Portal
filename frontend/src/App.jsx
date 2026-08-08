@@ -49,7 +49,7 @@ const App = () => {
                 <Route
                   path="customers/new"
                   element={(
-                    <PrivateRoute allowedRoles={['admin', 'sales']}>
+                    <PrivateRoute allowedRoles={['admin', 'sales', 'warehouse', 'accounts']}>
                       <CustomerFormPage />
                     </PrivateRoute>
                   )}
@@ -65,7 +65,7 @@ const App = () => {
                 <Route
                   path="customers/:id/edit"
                   element={(
-                    <PrivateRoute allowedRoles={['admin', 'sales']}>
+                    <PrivateRoute allowedRoles={['admin', 'sales', 'warehouse', 'accounts']}>
                       <CustomerFormPage />
                     </PrivateRoute>
                   )}
@@ -81,7 +81,7 @@ const App = () => {
                 <Route
                   path="products/new"
                   element={(
-                    <PrivateRoute allowedRoles={['admin', 'warehouse']}>
+                    <PrivateRoute allowedRoles={['admin', 'sales', 'warehouse', 'accounts']}>
                       <ProductFormPage />
                     </PrivateRoute>
                   )}
@@ -97,7 +97,7 @@ const App = () => {
                 <Route
                   path="products/:id/edit"
                   element={(
-                    <PrivateRoute allowedRoles={['admin', 'warehouse']}>
+                    <PrivateRoute allowedRoles={['admin', 'sales', 'warehouse', 'accounts']}>
                       <ProductFormPage />
                     </PrivateRoute>
                   )}
@@ -113,7 +113,7 @@ const App = () => {
                 <Route
                   path="challans/new"
                   element={(
-                    <PrivateRoute allowedRoles={['admin', 'sales', 'warehouse']}>
+                    <PrivateRoute allowedRoles={['admin', 'sales', 'warehouse', 'accounts']}>
                       <ChallanFormPage />
                     </PrivateRoute>
                   )}
@@ -129,7 +129,7 @@ const App = () => {
                 <Route
                   path="challans/:id/edit"
                   element={(
-                    <PrivateRoute allowedRoles={['admin', 'sales', 'warehouse']}>
+                    <PrivateRoute allowedRoles={['admin', 'sales', 'warehouse', 'accounts']}>
                       <ChallanFormPage />
                     </PrivateRoute>
                   )}

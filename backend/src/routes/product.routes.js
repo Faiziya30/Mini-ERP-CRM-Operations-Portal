@@ -19,19 +19,18 @@ router.use(authenticate);
 
 router.post(
   '/upload-image',
-  authorize('admin', 'warehouse'),
+  authorize('admin', 'warehouse', 'sales', 'accounts'),
   uploadProductImage.single('image'),
   productController.uploadImage
 );
 
 router.post(
   '/',
-  authorize('admin', 'warehouse'),
+  authorize('admin', 'warehouse', 'sales', 'accounts'),
   createProductValidator,
   validateRequest,
   productController.createProduct
 );
-
 
 router.get(
   '/',
@@ -51,7 +50,7 @@ router.get(
 
 router.put(
   '/:id',
-  authorize('admin', 'warehouse'),
+  authorize('admin', 'warehouse', 'sales', 'accounts'),
   updateProductValidator,
   validateRequest,
   productController.updateProduct
@@ -67,7 +66,7 @@ router.get(
 
 router.post(
   '/:id/stock',
-  authorize('admin', 'warehouse'),
+  authorize('admin', 'warehouse', 'sales', 'accounts'),
   adjustStockValidator,
   validateRequest,
   productController.adjustStock

@@ -23,6 +23,8 @@ module.exports = {
     password: process.env.DB_PASSWORD || '',
     host: process.env.DB_HOST || 'localhost',
     port: Number(process.env.DB_PORT) || 3306,
-    dialect: 'mysql'
+    dialect: process.env.DB_DIALECT || 'sqlite',
+    storage: process.env.DB_STORAGE || './database.sqlite'
   }
 };
+

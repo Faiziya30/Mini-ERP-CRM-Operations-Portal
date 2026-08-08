@@ -78,13 +78,16 @@ const ProductDetailPage = () => {
         </div>
         <div className="actions-cell">
           <Link to="/products" className="btn btn-ghost">Back</Link>
-          <Link to={`/products/${product.id}/edit`} className="btn btn-primary">Edit</Link>
           {canAdjust ? (
-            <button type="button" className="btn btn-ghost" onClick={() => setStockModalOpen(true)}>
-              Adjust Stock
-            </button>
+            <>
+              <Link to={`/products/${product.id}/edit`} className="btn btn-primary">Edit</Link>
+              <button type="button" className="btn btn-ghost" onClick={() => setStockModalOpen(true)}>
+                Adjust Stock
+              </button>
+            </>
           ) : null}
         </div>
+
       </div>
 
       <article className="card detail-grid">

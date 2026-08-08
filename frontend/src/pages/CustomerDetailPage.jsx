@@ -2,10 +2,16 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { addCustomerFollowUpApi, getCustomerApi } from '../api/customerApi';
 import useToast from '../hooks/useToast';
+import useAuth from '../hooks/useAuth';
 
 const CustomerDetailPage = () => {
   const { id } = useParams();
+  const { user } = useAuth();
   const { pushToast } = useToast();
+
+  const canEdit = user?.role === 'admin' || user?.role === 'sales';
+
+
 
   const [customer, setCustomer] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -81,8 +87,11 @@ const CustomerDetailPage = () => {
         </div>
         <div className="actions-cell">
           <Link to="/customers" className="btn btn-ghost">Back</Link>
-          <Link to={`/customers/${customer.id}/edit`} className="btn btn-primary">Edit</Link>
+          {canEdit ? (
+            <Link to={`/customers/${customer.id}/edit`} className="btn btn-primary">Edit</Link>
+          ) : null}
         </div>
+
       </div>
 
       <article className="card detail-grid">

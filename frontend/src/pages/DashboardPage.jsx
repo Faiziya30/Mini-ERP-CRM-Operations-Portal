@@ -1,37 +1,28 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  ResponsiveContainer,
-  LineChart,
-  Line,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend
+  ResponsiveContainer, LineChart, Line, BarChart, Bar,
+  XAxis, YAxis, CartesianGrid, Tooltip
 } from 'recharts';
+import { Users, AlertTriangle, FileText, CheckCircle, Plus, ArrowRight } from 'lucide-react';
 import { getDashboardStatsApi } from '../api/dashboardApi';
 import useAuth from '../hooks/useAuth';
 import StatusBadge from '../components/StatusBadge';
 
 const CustomTooltip = ({ active, payload, label }) => {
-  if (active && payload && payload.length) {
-    return (
-      <div className="chart-tooltip-stub">
-        <p className="tooltip-title">{label}</p>
-        {payload.map((entry, index) => (
-          <div key={index} className="tooltip-row">
-            <span className="tooltip-dot" style={{ backgroundColor: entry.color }} />
-            <span className="tooltip-name">{entry.name}:</span>
-            <span className="tooltip-value">{entry.value}</span>
-          </div>
-        ))}
-      </div>
-    );
-  }
-  return null;
+  if (!active || !payload?.length) return null;
+  return (
+    <div className="chart-tooltip-stub">
+      <p className="tooltip-title">{label}</p>
+      {payload.map((entry, i) => (
+        <div key={i} className="tooltip-row">
+          <span className="tooltip-dot" style={{ backgroundColor: entry.color }} />
+          <span className="tooltip-name">{entry.name}:</span>
+          <span className="tooltip-value">{entry.value}</span>
+        </div>
+      ))}
+    </div>
+  );
 };
 
 const DashboardPage = () => {
@@ -50,240 +41,175 @@ const DashboardPage = () => {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    const loadDashboardStats = async () => {
+    const load = async () => {
       setLoading(true);
-      setError('');
       try {
         const res = await getDashboardStatsApi();
         setStats(res.data || {});
       } catch (err) {
-        setError(err.response?.data?.message || 'Failed to load dashboard metrics');
+        setError(err.response?.data?.message || 'Failed to load dashboard');
       } finally {
         setLoading(false);
       }
     };
-
-    loadDashboardStats();
+    load();
   }, []);
 
-  const cardItems = [
-    {
-      label: 'TOTAL CUSTOMERS',
-      value: stats.totalCustomers,
-      badge: 'CRM ACCOUNTS',
-      link: '/customers',
-      code: 'CUST-TTL'
-    },
-    {
-      label: 'LOW STOCK ALERTS',
-      value: stats.lowStockProducts,
-      badge: stats.lowStockProducts > 0 ? 'CRITICAL' : 'OK',
-      link: '/products',
-      code: 'STK-WARN'
-    },
-    {
-      label: 'DRAFT CHALLANS',
-      value: stats.draftChallans,
-      badge: 'PENDING',
-      link: '/challans',
-      code: 'CH-DRAFT'
-    },
-    {
-      label: 'CONFIRMED (MONTH)',
-      value: stats.confirmedThisMonth,
-      badge: 'DISPATCHED',
-      link: '/challans',
-      code: 'CH-CNF-M'
-    }
+  const cards = [
+    { label: 'Total Customers', value: stats.totalCustomers, icon: Users, color: 'indigo', link: '/customers' },
+    { label: 'Low Stock Alerts', value: stats.lowStockProducts, icon: AlertTriangle, color: 'red', link: '/products' },
+    { label: 'Draft Challans', value: stats.draftChallans, icon: FileText, color: 'amber', link: '/challans' },
+    { label: 'Confirmed (Month)', value: stats.confirmedThisMonth, icon: CheckCircle, color: 'green', link: '/challans' }
   ];
 
   return (
-    <section className="fade-in dashboard-portal">
-      <div className="section-head mb-2 flex-between align-center">
+    <section className="fade-in">
+      <div className="section-head">
         <div>
-          <h1 className="portal-headline">Operations Overview</h1>
-          <p className="muted font-mono" style={{ fontSize: '0.85rem' }}>
-            MANIFEST REF: {new Date().toISOString().split('T')[0]} &bull; DISPATCHER ID: #{user.id}
-          </p>
+          <h2>Dashboard</h2>
+          <p className="muted">Overview of your operations</p>
         </div>
-        <div className="actions-cell">
-          <Link to="/challans/new" className="btn btn-primary">
-            + Create Sales Challan
-          </Link>
-        </div>
+        <Link to="/challans/new" className="btn btn-primary">
+          <Plus size={16} />
+          New Challan
+        </Link>
       </div>
 
       {error ? <div className="card error-banner mb-2">{error}</div> : null}
 
-      {/* Ticket Stub Summary Cards */}
       {loading ? (
         <div className="card skeleton-wrap mb-3">
           <div className="skeleton-row" />
-        </div>
-      ) : (
-        <div className="grid-cards mb-3">
-          {cardItems.map((item) => (
-            <article key={item.label} className="card card-ticket stat-stub-card">
-              <div className="ticket-cutout" />
-              <div className="flex-between align-center mb-1">
-                <span className="eyebrow-label">{item.label}</span>
-                <span className="stat-code-tag">{item.code}</span>
-              </div>
-              <div className="stat-number font-display mb-1">{item.value}</div>
-              <div className="flex-between align-center">
-                <span className="badge badge-ticket">{item.badge}</span>
-                <Link to={item.link} className="card-link font-mono">
-                  Manage &rarr;
-                </Link>
-              </div>
-            </article>
-          ))}
-        </div>
-      )}
-
-      {/* Recharts Data Visualizations */}
-      {!loading ? (
-        <div className="charts-grid mb-3">
-          {/* Chart 1: Stock Movement Trend (30 Days) */}
-          <div className="card card-ticket chart-card chart-wide">
-            <div className="ticket-cutout" />
-            <div className="flex-between align-center mb-1">
-              <div>
-                <span className="eyebrow-label">STOCK MOVEMENT TREND</span>
-                <h3 className="chart-title">Daily Stock Receipts vs Dispatches</h3>
-                <p className="chart-caption font-mono">30-day aggregate (IN vs OUT stock movements)</p>
-              </div>
-              <span className="badge font-mono">IN vs OUT</span>
-            </div>
-            <div className="chart-container" style={{ width: '100%', height: 260 }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={stats.stockMovementTrend || []} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
-                  <XAxis dataKey="date" tick={{ fill: 'var(--ink-muted)', fontSize: 11, fontFamily: 'var(--font-mono)' }} stroke="var(--border)" />
-                  <YAxis tick={{ fill: 'var(--ink-muted)', fontSize: 11, fontFamily: 'var(--font-mono)' }} stroke="var(--border)" />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Legend wrapperStyle={{ fontSize: '11px', fontFamily: 'var(--font-mono)', color: 'var(--ink)' }} />
-                  <Line type="monotone" dataKey="IN" name="Stock IN" stroke="var(--status-confirmed)" strokeWidth={2.5} dot={false} activeDot={{ r: 5 }} />
-                  <Line type="monotone" dataKey="OUT" name="Stock OUT" stroke="var(--status-cancelled)" strokeWidth={2.5} dot={false} activeDot={{ r: 5 }} />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
-          {/* Chart 2: Weekly Challans by Status */}
-          <div className="card card-ticket chart-card">
-            <div className="ticket-cutout" />
-            <div className="flex-between align-center mb-1">
-              <div>
-                <span className="eyebrow-label">WEEKLY THROUGHPUT</span>
-                <h3 className="chart-title">Challans by Status</h3>
-                <p className="chart-caption font-mono">Last 6-week breakdown</p>
-              </div>
-            </div>
-            <div className="chart-container" style={{ width: '100%', height: 240 }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={stats.challansByStatusWeekly || []} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
-                  <XAxis dataKey="week" tick={{ fill: 'var(--ink-muted)', fontSize: 11, fontFamily: 'var(--font-mono)' }} stroke="var(--border)" />
-                  <YAxis tick={{ fill: 'var(--ink-muted)', fontSize: 11, fontFamily: 'var(--font-mono)' }} stroke="var(--border)" />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Bar dataKey="Draft" name="Draft" stackId="a" fill="var(--status-draft)" />
-                  <Bar dataKey="Confirmed" name="Confirmed" stackId="a" fill="var(--status-confirmed)" />
-                  <Bar dataKey="Cancelled" name="Cancelled" stackId="a" fill="var(--status-cancelled)" />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
-          {/* Chart 3: Low Stock Products Horizontal Bar */}
-          <div className="card card-ticket chart-card">
-            <div className="ticket-cutout" />
-            <div className="flex-between align-center mb-1">
-              <div>
-                <span className="eyebrow-label">INVENTORY ALERT</span>
-                <h3 className="chart-title">Low Stock Products</h3>
-                <p className="chart-caption font-mono">Current vs Alert threshold</p>
-              </div>
-              <Link to="/products" className="card-link font-mono" style={{ fontSize: '0.78rem' }}>
-                View All &rarr;
-              </Link>
-            </div>
-            <div className="chart-container" style={{ width: '100%', height: 240 }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  layout="vertical"
-                  data={stats.lowStockProductsList || []}
-                  margin={{ top: 10, right: 10, left: 10, bottom: 0 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="var(--border)" />
-                  <XAxis type="number" tick={{ fill: 'var(--ink-muted)', fontSize: 11, fontFamily: 'var(--font-mono)' }} stroke="var(--border)" />
-                  <YAxis dataKey="sku" type="category" tick={{ fill: 'var(--ink-muted)', fontSize: 10, fontFamily: 'var(--font-mono)' }} width={80} stroke="var(--border)" />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Bar dataKey="currentStock" name="Current Stock" fill="var(--status-cancelled)" radius={[0, 4, 4, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-        </div>
-      ) : null}
-
-      {/* Recent Sales Challans Table */}
-      <div className="card toolbar-head flex-between align-center mb-1">
-        <div>
-          <h3 className="font-display">Recent Sales Challans</h3>
-          <p className="muted font-mono" style={{ fontSize: '0.8rem' }}>MANIFEST ENTRIES</p>
-        </div>
-        <Link to="/challans" className="btn btn-ghost btn-sm font-mono">
-          View All Challans &rarr;
-        </Link>
-      </div>
-
-      {loading ? (
-        <div className="card skeleton-wrap">
           <div className="skeleton-row" />
         </div>
-      ) : stats.recentChallans?.length === 0 ? (
-        <div className="card empty-state">
-          <p className="muted">No sales challans recorded yet.</p>
-        </div>
       ) : (
-        <div className="card table-wrap">
-          <table className="table manifest-table">
-            <thead>
-              <tr>
-                <th>CHALLAN NO.</th>
-                <th>CUSTOMER</th>
-                <th className="num-col">TOTAL QTY</th>
-                <th>STATUS</th>
-                <th>DATE</th>
-                <th style={{ textAlign: 'right' }}>ACTION</th>
-              </tr>
-            </thead>
-            <tbody>
-              {stats.recentChallans?.map((ch, idx) => (
-                <tr key={ch.id} className={`status-row-${ch.status.toLowerCase()}`}>
-                  <td className="font-mono bold-text">{ch.challanNumber}</td>
-                  <td>
-                    <strong>{ch.customer?.name || 'N/A'}</strong>
-                    {ch.customer?.businessName ? (
-                      <span className="muted"> ({ch.customer.businessName})</span>
-                    ) : null}
-                  </td>
-                  <td className="num-col font-mono">{ch.totalQuantity} units</td>
-                  <td>
-                    <StatusBadge status={ch.status} index={idx} />
-                  </td>
-                  <td className="font-mono">{new Date(ch.createdAt).toLocaleDateString()}</td>
-                  <td style={{ textAlign: 'right' }}>
-                    <Link to={`/challans/${ch.id}`} className="btn btn-ghost btn-sm font-mono">
-                      View
+        <>
+          {/* Metric Cards */}
+          <div className="metrics-grid mb-3">
+            {cards.map((c) => {
+              const Icon = c.icon;
+              return (
+                <div key={c.label} className="metric-card">
+                  <div className={`metric-icon ${c.color}`}>
+                    <Icon size={22} />
+                  </div>
+                  <div className="metric-body">
+                    <div className="metric-label">{c.label}</div>
+                    <div className="metric-value">{c.value}</div>
+                    <Link to={c.link} className="metric-link">
+                      View details <ArrowRight size={12} style={{ verticalAlign: 'middle' }} />
                     </Link>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Charts */}
+          <div className="charts-grid mb-3">
+            <div className="card chart-card chart-wide">
+              <h3 className="chart-title">Stock Movement Trend</h3>
+              <p className="chart-caption">Daily IN vs OUT movements — last 30 days</p>
+              <div style={{ width: '100%', height: 260 }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={stats.stockMovementTrend || []} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-color)" />
+                    <XAxis dataKey="date" tick={{ fill: 'var(--text-muted)', fontSize: 11 }} stroke="var(--border-color)" />
+                    <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 11 }} stroke="var(--border-color)" />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Line type="monotone" dataKey="IN" name="Stock IN" stroke="var(--success)" strokeWidth={2} dot={false} activeDot={{ r: 4 }} />
+                    <Line type="monotone" dataKey="OUT" name="Stock OUT" stroke="var(--danger)" strokeWidth={2} dot={false} activeDot={{ r: 4 }} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            <div className="card chart-card">
+              <h3 className="chart-title">Weekly Challans</h3>
+              <p className="chart-caption">Status breakdown — last 6 weeks</p>
+              <div style={{ width: '100%', height: 240 }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={stats.challansByStatusWeekly || []} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-color)" />
+                    <XAxis dataKey="week" tick={{ fill: 'var(--text-muted)', fontSize: 11 }} stroke="var(--border-color)" />
+                    <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 11 }} stroke="var(--border-color)" />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Bar dataKey="Draft" stackId="a" fill="var(--warning)" radius={[0, 0, 0, 0]} />
+                    <Bar dataKey="Confirmed" stackId="a" fill="var(--success)" radius={[0, 0, 0, 0]} />
+                    <Bar dataKey="Cancelled" stackId="a" fill="var(--danger)" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            <div className="card chart-card">
+              <h3 className="chart-title">Low Stock Products</h3>
+              <p className="chart-caption">
+                Current stock levels
+                <Link to="/products" style={{ marginLeft: 8, color: 'var(--accent)', fontSize: '0.78rem' }}>View all →</Link>
+              </p>
+              <div style={{ width: '100%', height: 240 }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart layout="vertical" data={stats.lowStockProductsList || []} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="var(--border-color)" />
+                    <XAxis type="number" tick={{ fill: 'var(--text-muted)', fontSize: 11 }} stroke="var(--border-color)" />
+                    <YAxis dataKey="sku" type="category" tick={{ fill: 'var(--text-muted)', fontSize: 10 }} width={80} stroke="var(--border-color)" />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Bar dataKey="currentStock" name="Stock" fill="var(--danger)" radius={[0, 4, 4, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </div>
+
+          {/* Recent Challans Table */}
+          <div className="card">
+            <div className="flex-between align-center mb-2">
+              <h3>Recent Sales Challans</h3>
+              <Link to="/challans" className="btn btn-ghost btn-sm">
+                View All <ArrowRight size={14} />
+              </Link>
+            </div>
+
+            {stats.recentChallans?.length === 0 ? (
+              <div className="empty-state">
+                <p className="muted">No challans recorded yet.</p>
+              </div>
+            ) : (
+              <div className="table-wrap">
+                <table className="table">
+                  <thead>
+                    <tr>
+                      <th>Challan No.</th>
+                      <th>Customer</th>
+                      <th>Qty</th>
+                      <th>Status</th>
+                      <th>Date</th>
+                      <th style={{ textAlign: 'right' }}>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {stats.recentChallans?.map((ch) => (
+                      <tr key={ch.id}>
+                        <td><strong>{ch.challanNumber}</strong></td>
+                        <td>
+                          {ch.customer?.name || 'N/A'}
+                          {ch.customer?.businessName ? <span className="muted"> · {ch.customer.businessName}</span> : null}
+                        </td>
+                        <td>{ch.totalQuantity} units</td>
+                        <td><StatusBadge status={ch.status} /></td>
+                        <td>{new Date(ch.createdAt).toLocaleDateString()}</td>
+                        <td style={{ textAlign: 'right' }}>
+                          <Link to={`/challans/${ch.id}`} className="btn btn-ghost btn-sm">View</Link>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </>
       )}
     </section>
   );

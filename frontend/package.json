@@ -18,6 +18,7 @@
   "description": "Mini ERP + CRM frontend",
   "dependencies": {
     "axios": "^1.19.0",
+    "lucide-react": "^1.30.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-router-dom": "^6.30.4",

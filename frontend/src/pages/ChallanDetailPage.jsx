@@ -3,6 +3,8 @@ import { useNavigate, useParams, Link } from 'react-router-dom';
 import { getChallanApi, confirmChallanApi, cancelChallanApi, downloadChallanPdfApi } from '../api/challanApi';
 import useToast from '../hooks/useToast';
 import useAuth from '../hooks/useAuth';
+import StatusBadge from '../components/StatusBadge';
+
 
 const ChallanDetailPage = () => {
   const { id } = useParams();
@@ -211,11 +213,9 @@ const ChallanDetailPage = () => {
           <div style={{ textAlign: 'right' }}>
             <h2 className="challan-num">{challan.challanNumber}</h2>
             <div className="mb-1">
-              Status:{' '}
-              <span className={`badge status-${challan.status.toLowerCase()}`}>
-                {challan.status}
-              </span>
+              Status: <StatusBadge status={challan.status} />
             </div>
+
             <p className="muted">Date: {new Date(challan.createdAt).toLocaleDateString()}</p>
           </div>
         </div>

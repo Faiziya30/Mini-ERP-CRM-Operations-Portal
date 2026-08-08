@@ -18,3 +18,8 @@ React + Vite dashboard frontend.
   - Role-aware sidebar
   - Theme toggle (light/dark)
   - Protected routes + 403 page
+- Module 2 complete:
+   - Customer list with search, status/type filters, pagination
+   - Add/edit customer form with validation
+   - Customer detail with follow-up timeline + add note
+   - Admin-only delete with confirmation dialog

@@ -144,6 +144,11 @@ button {
   box-shadow: var(--shadow-sm);
 }
 
+.btn-danger {
+  background: var(--danger);
+  color: #fff;
+}
+
 .grid-cards {
   display: grid;
   grid-template-columns: repeat(4, minmax(180px, 1fr));
@@ -228,6 +233,206 @@ button {
   animation: fadeIn 260ms ease;
 }
 
+.section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.toolbar {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  text-align: left;
+  padding: 0.85rem;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.actions-cell {
+  display: inline-flex;
+  gap: var(--space-2);
+}
+
+.status-lead {
+  background: color-mix(in srgb, var(--warning) 18%, transparent);
+}
+
+.status-active {
+  background: color-mix(in srgb, var(--success) 18%, transparent);
+}
+
+.status-inactive {
+  background: color-mix(in srgb, var(--danger) 18%, transparent);
+}
+
+.pagination-bar {
+  margin-top: var(--space-4);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.empty-state {
+  text-align: center;
+  padding: var(--space-6);
+}
+
+.skeleton-wrap {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.skeleton-row {
+  height: 14px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--surface-2), var(--surface), var(--surface-2));
+  background-size: 200% 100%;
+  animation: shimmer 1.2s infinite linear;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(180px, 1fr));
+  gap: var(--space-4);
+}
+
+.form-group-wide {
+  grid-column: 1 / -1;
+}
+
+.form-actions {
+  grid-column: 1 / -1;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(180px, 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.detail-wide {
+  grid-column: 1 / -1;
+}
+
+.detail-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(220px, 1fr));
+  gap: var(--space-4);
+}
+
+.timeline-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.timeline-item {
+  border-left: 3px solid var(--primary);
+  padding-left: var(--space-3);
+  background: var(--surface-2);
+  border-radius: var(--radius-md);
+  padding-top: var(--space-2);
+  padding-bottom: var(--space-2);
+}
+
+.timeline-date {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  display: grid;
+  place-items: center;
+  z-index: 90;
+  padding: var(--space-4);
+}
+
+.modal-card {
+  width: min(420px, 100%);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-5);
+}
+
+.modal-actions {
+  margin-top: var(--space-4);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+}
+
+.toast-stack {
+  position: fixed;
+  right: 16px;
+  top: 16px;
+  z-index: 120;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.toast-item {
+  min-width: 260px;
+  max-width: 360px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: 0.6rem 0.8rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  animation: fadeIn 220ms ease;
+}
+
+.toast-item.success {
+  border-left: 4px solid var(--success);
+}
+
+.toast-item.error {
+  border-left: 4px solid var(--danger);
+}
+
+.toast-item button {
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -251,6 +456,16 @@ button {
 
   .grid-cards {
     grid-template-columns: repeat(2, minmax(140px, 1fr));
+  }
+
+  .toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-columns,
+  .detail-grid,
+  .form-grid {
+    grid-template-columns: 1fr;
   }
 }
 

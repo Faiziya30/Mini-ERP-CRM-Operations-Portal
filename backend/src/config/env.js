@@ -2,8 +2,8 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
-// When DATABASE_URL is provided (e.g. Render managed Postgres) the individual
-// DB_* keys are not required.
+// When DATABASE_URL is provided, it may represent a full connection string.
+// Individual DB_* keys are still used to select the dialect and may be required.
 const databaseUrl = process.env.DATABASE_URL;
 
 if (!databaseUrl) {

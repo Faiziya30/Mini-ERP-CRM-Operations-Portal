@@ -1,5 +1,6 @@
 const { Op } = require('sequelize');
 const { Customer, CustomerFollowUp, User } = require('../models');
+const { getLikeOp } = require('../utils/dbHelpers');
 
 const parsePagination = (page, limit) => {
   const parsedPage = Number(page) || 1;
@@ -55,10 +56,11 @@ const listCustomers = async ({ page, limit, search, status, customerType }) => {
   }
 
   if (search) {
+    const likeOp = getLikeOp();
     where[Op.or] = [
-      { name: { [Op.like]: `%${search}%` } },
-      { mobile: { [Op.like]: `%${search}%` } },
-      { businessName: { [Op.like]: `%${search}%` } }
+      { name: { [likeOp]: `%${search}%` } },
+      { mobile: { [likeOp]: `%${search}%` } },
+      { businessName: { [likeOp]: `%${search}%` } }
     ];
   }
 

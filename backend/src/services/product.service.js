@@ -1,5 +1,6 @@
 const { Op, col, where } = require('sequelize');
 const { sequelize, Product, StockMovement, User } = require('../models');
+const { getLikeOp } = require('../utils/dbHelpers');
 
 const parsePagination = (page, limit) => {
   const parsedPage = Number(page) || 1;
@@ -50,10 +51,11 @@ const listProducts = async ({ page, limit, search, category, lowStock }) => {
   const whereClause = {};
 
   if (search) {
+    const likeOp = getLikeOp();
     whereClause[Op.or] = [
-      { name: { [Op.like]: `%${search}%` } },
-      { sku: { [Op.like]: `%${search}%` } },
-      { category: { [Op.like]: `%${search}%` } }
+      { name: { [likeOp]: `%${search}%` } },
+      { sku: { [likeOp]: `%${search}%` } },
+      { category: { [likeOp]: `%${search}%` } }
     ];
   }
 

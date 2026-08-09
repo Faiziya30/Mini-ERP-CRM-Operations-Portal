@@ -4,23 +4,25 @@ const logger = require('../utils/logger');
 
 let sequelize;
 
+const commonPool = {
+  max: 20,
+  min: 0,
+  acquire: 60000,
+  idle: 20000
+};
+
 if (env.databaseUrl) {
-  // Production path — Render provides DATABASE_URL for managed PostgreSQL
+  // Production path — allow a full DATABASE_URL while respecting the configured dialect.
   sequelize = new Sequelize(env.databaseUrl, {
-    dialect: 'postgres',
+    dialect: env.db.dialect,
     logging: false,
-    dialectOptions: {
+    pool: commonPool,
+    dialectOptions: env.db.dialect === 'postgres' ? {
       ssl: {
         require: true,
         rejectUnauthorized: false
       }
-    },
-    pool: {
-      max: 20,
-      min: 0,
-      acquire: 60000,
-      idle: 20000
-    }
+    } : {}
   });
 } else if (env.db.dialect === 'sqlite') {
   sequelize = new Sequelize({
@@ -29,23 +31,17 @@ if (env.databaseUrl) {
     logging: false
   });
 } else {
-  // Local MySQL / other dialect
   sequelize = new Sequelize(env.db.name, env.db.user, env.db.password, {
     host: env.db.host,
     port: env.db.port,
     dialect: env.db.dialect,
     logging: false,
-    pool: {
-      max: 20,
-      min: 0,
-      acquire: 60000,
-      idle: 20000
-    }
+    pool: commonPool
   });
 }
 
 // Try authenticating immediately and log result (non-blocking)
-const dialectLabel = env.databaseUrl ? 'postgres (DATABASE_URL)' : env.db.dialect;
+const dialectLabel = env.databaseUrl ? env.db.dialect : env.db.dialect;
 sequelize.authenticate()
   .then(() => logger.info(`Database connection (${dialectLabel}) established.`))
   .catch((err) => logger.error('Database connection failed:', err));

@@ -1,5 +1,6 @@
 databases:
   - name: mini-erp-crm-db
+    type: mysql
     databaseName: mini_erp_crm
     user: mini_erp_user
     plan: free

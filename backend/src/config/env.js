@@ -2,7 +2,7 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
-const requiredKeys = ['DB_NAME', 'DB_USER', 'DB_HOST', 'JWT_SECRET'];
+const requiredKeys = ['DB_NAME', 'DB_USER', 'DB_HOST', 'DB_PASSWORD', 'JWT_SECRET'];
 
 requiredKeys.forEach((key) => {
   if (!process.env[key]) {
@@ -23,7 +23,7 @@ module.exports = {
     password: process.env.DB_PASSWORD || '',
     host: process.env.DB_HOST || 'localhost',
     port: Number(process.env.DB_PORT) || 3306,
-    dialect: process.env.DB_DIALECT || 'sqlite',
+    dialect: process.env.DB_DIALECT || 'mysql',
     storage: process.env.DB_STORAGE || './database.sqlite'
   }
 };

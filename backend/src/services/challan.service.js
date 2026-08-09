@@ -75,28 +75,73 @@ const buildSnapshotItems = (items, productMap, challanId) => {
 const sumQuantity = (items) => items.reduce((acc, item) => acc + Number(item.quantity), 0);
 
 const createChallan = async ({ customerId, items }, userId) => {
-  return sequelize.transaction(async (transaction) => {
-    await ensureCustomerExists(customerId, transaction);
-    const productMap = await ensureProductsExist(items, transaction);
+  if (!customerId) {
+    const error = new Error('CustomerId is required');
+    error.statusCode = 400;
+    throw error;
+  }
 
-    const challanNumber = await generateChallanNo(transaction);
+  if (!Array.isArray(items) || items.length === 0) {
+    const error = new Error('At least one item is required to create a challan');
+    error.statusCode = 400;
+    throw error;
+  }
 
-    const challan = await SalesChallan.create({
-      challanNumber,
-      customerId,
-      totalQuantity: sumQuantity(items),
-      status: 'Draft',
-      createdBy: userId
-    }, { transaction });
+  const maxAttempts = 3;
+  let attempt = 0;
 
-    const challanItems = buildSnapshotItems(items, productMap, challan.id);
-    await ChallanItem.bulkCreate(challanItems, { transaction });
+  while (attempt < maxAttempts) {
+    attempt += 1;
+    try {
+      return await sequelize.transaction(async (transaction) => {
+        await ensureCustomerExists(customerId, transaction);
+        const productMap = await ensureProductsExist(items, transaction);
 
-    return challan;
-  });
+        const challanNumber = await generateChallanNo(transaction);
+
+        const challan = await SalesChallan.create({
+          challanNumber,
+          customerId,
+          totalQuantity: sumQuantity(items),
+          status: 'Draft',
+          createdBy: userId
+        }, { transaction });
+
+        const challanItems = buildSnapshotItems(items, productMap, challan.id);
+        await ChallanItem.bulkCreate(challanItems, { transaction });
+
+        return challan;
+      });
+    } catch (err) {
+      // If unique constraint on challanNumber occurred, retry a few times to avoid race condition
+      const isUniqueErr = err.name === 'SequelizeUniqueConstraintError' || (err.parent && err.parent.code === 'ER_DUP_ENTRY');
+      if (isUniqueErr && attempt < maxAttempts) {
+        // small backoff before retrying
+        await new Promise((r) => setTimeout(r, 50 * attempt));
+        continue;
+      }
+      throw err;
+    }
+  }
+  // If we exhausted attempts
+  const error = new Error('Failed to generate unique challan number, please retry');
+  error.statusCode = 500;
+  throw error;
 };
 
 const updateChallan = async (id, { customerId, items }) => {
+  if (!customerId) {
+    const error = new Error('CustomerId is required');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  if (!Array.isArray(items) || items.length === 0) {
+    const error = new Error('At least one item is required to update a challan');
+    error.statusCode = 400;
+    throw error;
+  }
+
   return sequelize.transaction(async (transaction) => {
     const challan = await SalesChallan.findByPk(id, {
       transaction,
@@ -154,6 +199,12 @@ const confirmChallan = async (id, userId) => {
       where: { challanId: challan.id },
       transaction
     });
+
+    if (!items || items.length === 0) {
+      const error = new Error('Challan has no items to confirm');
+      error.statusCode = 400;
+      throw error;
+    }
 
     const productIds = [...new Set(items.map((item) => item.productId))];
     const products = await Product.findAll({

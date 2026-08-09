@@ -185,7 +185,7 @@ const seedData = async () => {
 const run = async () => {
   try {
     await sequelize.authenticate();
-    await sequelize.sync({ alter: true });
+    await sequelize.sync();
     await seedData();
     console.log('Seed completed successfully.');
     process.exit(0);

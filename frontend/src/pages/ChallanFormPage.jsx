@@ -153,17 +153,23 @@ const ChallanFormPage = () => {
     };
 
     try {
+      let response;
       if (isEdit) {
-        await updateChallanApi(id, payload);
+        response = await updateChallanApi(id, payload);
         showToast('Challan draft updated successfully', 'success');
-        navigate(`/challans/${id}`);
       } else {
-        const response = await createChallanApi(payload);
+        response = await createChallanApi(payload);
         showToast('Challan draft created successfully', 'success');
-        navigate(`/challans/${response.data.id}`);
+      }
+
+      const nextId = response?.data?.id || id;
+      if (nextId) {
+        navigate(`/challans/${nextId}`);
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to save challan');
+      const respData = err.response?.data;
+      const message = respData?.message || err.message || 'Failed to save challan';
+      setError(message);
     } finally {
       setSubmitting(false);
     }
@@ -191,19 +197,24 @@ const ChallanFormPage = () => {
         await updateChallanApi(id, payload);
       } else {
         const createRes = await createChallanApi(payload);
-        targetId = createRes.data.id;
+        targetId = createRes?.data?.id || id;
       }
 
-      await confirmChallanApi(targetId);
-      showToast('Sales Challan created & confirmed successfully!', 'success');
-      navigate(`/challans/${targetId}`);
+      const confirmRes = await confirmChallanApi(targetId);
+      if (confirmRes?.data?.id || confirmRes?.data?.status) {
+        showToast('Sales Challan created & confirmed successfully!', 'success');
+        navigate(`/challans/${targetId}`);
+      } else {
+        setError('Challan was saved but the confirmation response was unexpected.');
+      }
     } catch (err) {
       const respData = err.response?.data;
       if (respData?.errors && Array.isArray(respData.errors)) {
         setStockErrors(respData.errors);
         setError(respData.message || 'Stock availability check failed');
       } else {
-        setError(respData?.message || 'Failed to confirm challan');
+        const message = respData?.message || err.message || 'Failed to confirm challan';
+        setError(message);
       }
     } finally {
       setSubmitting(false);

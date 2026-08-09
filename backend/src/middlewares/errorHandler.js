@@ -6,7 +6,7 @@ const notFoundHandler = (req, res) => {
 };
 
 const errorHandler = (err, req, res, next) => {
-  logger.error(err);
+  logger.error(err.stack || err);
 
   if (res.headersSent) {
     return next(err);

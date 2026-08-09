@@ -105,6 +105,12 @@ Create a local MySQL database (e.g. `mini_erp_db`):
 CREATE DATABASE mini_erp_db;
 ```
 
+Alternatively, use the provided initialization SQL to create the schema and tables:
+
+```bash
+mysql -u root -p < backend/db/init_mysql.sql
+```
+
 ### 2. Backend Configuration
 ```bash
 cd backend
@@ -128,6 +134,8 @@ npm install
 npm run seed
 npm run dev
 ```
+
+Note: `mysql2` is included as a dependency in `backend/package.json`; ensure your MySQL server is running and the `.env` values match.
 
 ### 3. Frontend Configuration
 In a new terminal tab:

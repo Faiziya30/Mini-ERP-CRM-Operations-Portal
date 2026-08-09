@@ -1,6 +1,12 @@
 const { Op } = require('sequelize');
 const { sequelize, Customer, Product, SalesChallan, StockMovement } = require('../models');
 
+const quoteColumn = (name) => {
+  if (sequelize.getDialect() === 'postgres') return `"${name}"`;
+  if (sequelize.getDialect() === 'mysql') return `\`${name}\``;
+  return name;
+};
+
 const getStats = async () => {
   const totalCustomers = await Customer.count({
     where: { isDeleted: false }
@@ -106,7 +112,7 @@ const getStats = async () => {
   // Chart 3: Low Stock Products List (Top 6 ranked by low stock ratio)
   const lowStockProductsList = await Product.findAll({
     order: [
-      [sequelize.literal('currentStock - minStockAlert'), 'ASC']
+      [sequelize.literal(`${quoteColumn('currentStock')} - ${quoteColumn('minStockAlert')}`), 'ASC']
     ],
     limit: 6
   });

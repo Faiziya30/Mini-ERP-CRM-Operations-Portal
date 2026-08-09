@@ -5,6 +5,7 @@ import useDebounce from '../hooks/useDebounce';
 import useAuth from '../hooks/useAuth';
 import useToast from '../hooks/useToast';
 import ConfirmDialog from '../components/ConfirmDialog';
+import { Eye, Pencil, Search, Trash2, Filter } from 'lucide-react';
 
 const defaultFilters = {
   search: '',
@@ -59,6 +60,11 @@ const CustomersPage = () => {
     setFilters((prev) => ({ ...prev, [name]: value }));
   };
 
+  const chipGroups = {
+    status: ['', 'Lead', 'Active', 'Inactive'],
+    customerType: ['', 'Retail', 'Wholesale', 'Distributor']
+  };
+
   const handleDeleteCustomer = async () => {
     if (!deleteTarget) {
       return;
@@ -75,8 +81,8 @@ const CustomersPage = () => {
   };
 
   return (
-    <section className="fade-in">
-      <div className="section-head">
+    <section className="page-shell fade-in">
+      <div className="section-head dashboard-head">
         <div>
           <h2>Customers</h2>
           <p className="muted">Track leads, active buyers, and follow-up schedules.</p>
@@ -84,27 +90,50 @@ const CustomersPage = () => {
         <Link to="/customers/new" className="btn btn-primary">Add Customer</Link>
       </div>
 
-      <div className="card toolbar">
-        <input
-          className="input"
-          type="text"
-          name="search"
-          value={filters.search}
-          onChange={handleFilterChange}
-          placeholder="Search by name, mobile, business"
-        />
-        <select className="input" name="status" value={filters.status} onChange={handleFilterChange}>
-          <option value="">All Status</option>
-          <option value="Lead">Lead</option>
-          <option value="Active">Active</option>
-          <option value="Inactive">Inactive</option>
-        </select>
-        <select className="input" name="customerType" value={filters.customerType} onChange={handleFilterChange}>
-          <option value="">All Types</option>
-          <option value="Retail">Retail</option>
-          <option value="Wholesale">Wholesale</option>
-          <option value="Distributor">Distributor</option>
-        </select>
+      <div className="card toolbar toolbar-modern">
+        <div className="toolbar-search">
+          <Search size={16} />
+          <input
+            className="input toolbar-input"
+            type="text"
+            name="search"
+            value={filters.search}
+            onChange={handleFilterChange}
+            placeholder="Search customers, mobile, business"
+          />
+        </div>
+
+        <div className="toolbar-filter-row">
+          <span className="toolbar-filter-label"><Filter size={14} /> Status</span>
+          <div className="chip-group">
+            {chipGroups.status.map((status) => (
+              <button
+                key={status || 'all-status'}
+                type="button"
+                className={`chip ${filters.status === status ? 'active' : ''}`}
+                onClick={() => setFilters((prev) => ({ ...prev, status }))}
+              >
+                {status || 'All'}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="toolbar-filter-row">
+          <span className="toolbar-filter-label"><Filter size={14} /> Type</span>
+          <div className="chip-group">
+            {chipGroups.customerType.map((customerType) => (
+              <button
+                key={customerType || 'all-types'}
+                type="button"
+                className={`chip ${filters.customerType === customerType ? 'active' : ''}`}
+                onClick={() => setFilters((prev) => ({ ...prev, customerType }))}
+              >
+                {customerType || 'All'}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
       {loading ? (
@@ -145,16 +174,22 @@ const CustomersPage = () => {
                     <span className={`badge status-${customer.status.toLowerCase()}`}>{customer.status}</span>
                   </td>
                   <td>{customer.followUpDate ? new Date(customer.followUpDate).toLocaleDateString() : '-'}</td>
-                  <td className="actions-cell">
-                    <Link className="btn btn-ghost" to={`/customers/${customer.id}`}>View</Link>
-                    <Link className="btn btn-ghost" to={`/customers/${customer.id}/edit`}>Edit</Link>
+                  <td className="actions-cell actions-cell-compact">
+                    <Link className="icon-btn" to={`/customers/${customer.id}`} title="View customer" aria-label="View customer">
+                      <Eye size={16} />
+                    </Link>
+                    <Link className="icon-btn" to={`/customers/${customer.id}/edit`} title="Edit customer" aria-label="Edit customer">
+                      <Pencil size={16} />
+                    </Link>
                     {user?.role === 'admin' ? (
                       <button
                         type="button"
-                        className="btn btn-danger"
+                        className="icon-btn icon-btn-danger"
                         onClick={() => setDeleteTarget(customer)}
+                        title="Delete customer"
+                        aria-label="Delete customer"
                       >
-                        Delete
+                        <Trash2 size={16} />
                       </button>
                     ) : null}
                   </td>
@@ -165,7 +200,7 @@ const CustomersPage = () => {
         </div>
       )}
 
-      <div className="pagination-bar">
+      <div className="pagination-bar pagination-modern">
         <button
           type="button"
           className="btn btn-ghost"
@@ -174,7 +209,7 @@ const CustomersPage = () => {
         >
           Previous
         </button>
-        <span className="muted">Page {meta.page} of {meta.totalPages} • {meta.total} records</span>
+        <span className="pagination-meta">Page {meta.page} of {meta.totalPages} • {meta.total} records</span>
         <button
           type="button"
           className="btn btn-ghost"

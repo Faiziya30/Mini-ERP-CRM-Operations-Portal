@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Users, Package, FileText, Shield } from 'lucide-react';
+import { LayoutDashboard, Users, Package, FileText, Shield, LogOut, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import useAuth from '../hooks/useAuth';
 
 const menuItems = [
@@ -10,20 +10,40 @@ const menuItems = [
   { label: 'Users', path: '/users', roles: ['admin'], icon: Shield }
 ];
 
-const Sidebar = () => {
-  const { user } = useAuth();
+const Sidebar = ({ collapsed = false, onToggleCollapse }) => {
+  const { user, logout } = useAuth();
+
+  const initials = (user?.name || 'U')
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join('')
+    .toUpperCase();
 
   return (
-    <aside className="sidebar">
-      <div className="sidebar-brand">
-        <div className="sidebar-brand-icon">
-          <Package size={20} />
+    <aside className={`sidebar ${collapsed ? 'is-collapsed' : ''}`}>
+      <div className="sidebar-brand-wrap">
+        <div className="sidebar-brand">
+          <div className="sidebar-brand-icon">
+            <Package size={20} />
+          </div>
+          <div className="sidebar-brand-copy">
+            <h1>Mini ERP</h1>
+            <span>Operations Portal</span>
+          </div>
         </div>
-        <div>
-          <h1>Mini ERP</h1>
-          <span>Operations Portal</span>
-        </div>
+        <button
+          type="button"
+          className="sidebar-collapse-btn"
+          onClick={onToggleCollapse}
+          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        >
+          {collapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
+        </button>
       </div>
+
       <nav className="nav-links">
         {menuItems
           .filter((item) => item.roles.includes(user.role))
@@ -35,6 +55,7 @@ const Sidebar = () => {
                 to={item.path}
                 className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
                 end={item.path === '/'}
+                title={collapsed ? item.label : undefined}
               >
                 <span className="nav-icon"><Icon size={18} /></span>
                 <span className="nav-label">{item.label}</span>
@@ -42,6 +63,17 @@ const Sidebar = () => {
             );
           })}
       </nav>
+
+      <div className="sidebar-profile">
+        <div className="sidebar-avatar" aria-hidden="true">{initials}</div>
+        <div className="sidebar-profile-copy">
+          <strong>{user?.name || 'Team Member'}</strong>
+          <span>{user?.role || 'member'}</span>
+        </div>
+        <button type="button" className="sidebar-signout-btn" onClick={logout} title="Sign out">
+          <LogOut size={16} />
+        </button>
+      </div>
     </aside>
   );
 };

@@ -109,7 +109,7 @@ const CustomerFormPage = () => {
 
   if (loading) {
     return (
-      <section className="card skeleton-wrap">
+      <section className="card skeleton-wrap page-form-shell">
         <div className="skeleton-row" />
         <div className="skeleton-row" />
         <div className="skeleton-row" />
@@ -118,81 +118,109 @@ const CustomerFormPage = () => {
   }
 
   return (
-    <section className="card fade-in">
-      <div className="section-head">
-        <h2>{isEdit ? 'Edit Customer' : 'Add Customer'}</h2>
+    <section className="page-shell page-form-shell fade-in">
+      <div className="section-head dashboard-head">
+        <div>
+          <h2>{isEdit ? 'Edit Customer' : 'Add Customer'}</h2>
+          <p className="muted">Capture customer details in a structured, easy-to-scan layout.</p>
+        </div>
         <Link to="/customers" className="btn btn-ghost">Back</Link>
       </div>
 
-      <form className="form-grid" onSubmit={handleSubmit}>
-        <label className="form-group">
-          <span>Name</span>
-          <input className="input" name="name" value={formData.name} onChange={handleChange} />
-          {errors.name ? <small className="error-text">{errors.name}</small> : null}
-        </label>
+      <form className="form-layout" onSubmit={handleSubmit}>
+        <section className="card form-section">
+          <div className="section-subhead">
+            <h3>Core Information</h3>
+            <p className="muted">Name, contact, and business identity.</p>
+          </div>
+          <div className="form-grid form-grid-2">
+            <label className="form-group">
+              <span>Name</span>
+              <input className="input" name="name" value={formData.name} onChange={handleChange} />
+              {errors.name ? <small className="error-text">{errors.name}</small> : null}
+            </label>
 
-        <label className="form-group">
-          <span>Mobile</span>
-          <input className="input" name="mobile" value={formData.mobile} onChange={handleChange} />
-          {errors.mobile ? <small className="error-text">{errors.mobile}</small> : null}
-        </label>
+            <label className="form-group">
+              <span>Mobile</span>
+              <input className="input" name="mobile" value={formData.mobile} onChange={handleChange} />
+              {errors.mobile ? <small className="error-text">{errors.mobile}</small> : null}
+            </label>
 
-        <label className="form-group">
-          <span>Email</span>
-          <input className="input" name="email" value={formData.email} onChange={handleChange} />
-          {errors.email ? <small className="error-text">{errors.email}</small> : null}
-        </label>
+            <label className="form-group">
+              <span>Email</span>
+              <input className="input" name="email" value={formData.email} onChange={handleChange} />
+              {errors.email ? <small className="error-text">{errors.email}</small> : null}
+            </label>
 
-        <label className="form-group">
-          <span>Business Name</span>
-          <input className="input" name="businessName" value={formData.businessName} onChange={handleChange} />
-          {errors.businessName ? <small className="error-text">{errors.businessName}</small> : null}
-        </label>
+            <label className="form-group">
+              <span>GST Number</span>
+              <input className="input" name="gstNumber" value={formData.gstNumber} onChange={handleChange} />
+            </label>
+          </div>
+        </section>
 
-        <label className="form-group">
-          <span>GST Number</span>
-          <input className="input" name="gstNumber" value={formData.gstNumber} onChange={handleChange} />
-        </label>
+        <section className="card form-section">
+          <div className="section-subhead">
+            <h3>Business Profile</h3>
+            <p className="muted">Classification and follow-up context.</p>
+          </div>
+          <div className="form-grid form-grid-2">
+            <label className="form-group">
+              <span>Business Name</span>
+              <input className="input" name="businessName" value={formData.businessName} onChange={handleChange} />
+              {errors.businessName ? <small className="error-text">{errors.businessName}</small> : null}
+            </label>
 
-        <label className="form-group">
-          <span>Customer Type</span>
-          <select className="input" name="customerType" value={formData.customerType} onChange={handleChange}>
-            <option value="Retail">Retail</option>
-            <option value="Wholesale">Wholesale</option>
-            <option value="Distributor">Distributor</option>
-          </select>
-        </label>
+            <label className="form-group">
+              <span>Customer Type</span>
+              <select className="input" name="customerType" value={formData.customerType} onChange={handleChange}>
+                <option value="Retail">Retail</option>
+                <option value="Wholesale">Wholesale</option>
+                <option value="Distributor">Distributor</option>
+              </select>
+            </label>
 
-        <label className="form-group">
-          <span>Status</span>
-          <select className="input" name="status" value={formData.status} onChange={handleChange}>
-            <option value="Lead">Lead</option>
-            <option value="Active">Active</option>
-            <option value="Inactive">Inactive</option>
-          </select>
-        </label>
+            <label className="form-group">
+              <span>Status</span>
+              <select className="input" name="status" value={formData.status} onChange={handleChange}>
+                <option value="Lead">Lead</option>
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+              </select>
+            </label>
 
-        <label className="form-group">
-          <span>Follow-up Date</span>
-          <input className="input" type="date" name="followUpDate" value={formData.followUpDate} onChange={handleChange} />
-        </label>
+            <label className="form-group">
+              <span>Follow-up Date</span>
+              <input className="input" type="date" name="followUpDate" value={formData.followUpDate} onChange={handleChange} />
+            </label>
+          </div>
+        </section>
 
-        <label className="form-group form-group-wide">
-          <span>Address</span>
-          <textarea className="input" name="address" rows="3" value={formData.address} onChange={handleChange} />
-          {errors.address ? <small className="error-text">{errors.address}</small> : null}
-        </label>
+        <section className="card form-section form-section-wide">
+          <div className="section-subhead">
+            <h3>Location & Notes</h3>
+            <p className="muted">Use this space for address details and internal remarks.</p>
+          </div>
+          <div className="form-grid">
+            <label className="form-group form-group-wide">
+              <span>Address</span>
+              <textarea className="input" name="address" rows="3" value={formData.address} onChange={handleChange} />
+              {errors.address ? <small className="error-text">{errors.address}</small> : null}
+            </label>
 
-        <label className="form-group form-group-wide">
-          <span>Notes</span>
-          <textarea className="input" name="notes" rows="3" value={formData.notes} onChange={handleChange} />
-        </label>
+            <label className="form-group form-group-wide">
+              <span>Notes</span>
+              <textarea className="input" name="notes" rows="3" value={formData.notes} onChange={handleChange} />
+            </label>
+          </div>
 
-        <div className="form-actions">
-          <button type="submit" className="btn btn-primary" disabled={saving}>
-            {saving ? 'Saving...' : isEdit ? 'Update Customer' : 'Create Customer'}
-          </button>
-        </div>
+          <div className="form-actions form-actions-split">
+            <Link to="/customers" className="btn btn-ghost">Cancel</Link>
+            <button type="submit" className="btn btn-primary" disabled={saving}>
+              {saving ? 'Saving...' : isEdit ? 'Update Customer' : 'Create Customer'}
+            </button>
+          </div>
+        </section>
       </form>
     </section>
   );

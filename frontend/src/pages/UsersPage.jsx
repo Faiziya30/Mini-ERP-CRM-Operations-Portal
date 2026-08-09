@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { listUsersApi, registerApi } from '../api/authApi';
 import useToast from '../hooks/useToast';
+import { Eye, Pencil, Search, Shield, Trash2, X } from 'lucide-react';
+import Card from '../components/Card';
 
 const UsersPage = () => {
   const showToast = useToast();
@@ -59,31 +61,31 @@ const UsersPage = () => {
   };
 
   return (
-    <section className="fade-in">
-      <div className="section-head">
+    <section className="page-shell fade-in">
+      <div className="section-head dashboard-head">
         <div>
           <h2>User Management</h2>
-          <p className="muted">Admin portal to view and register system users per role</p>
+          <p className="muted">Admin portal to view and register system users per role.</p>
         </div>
         <button type="button" className="btn btn-primary" onClick={() => setShowModal(true)}>
           + Create New User
         </button>
       </div>
 
-      {error ? <div className="card error-banner mb-1">{error}</div> : null}
+      {error ? <Card className="error-banner mb-1">{error}</Card> : null}
 
       {loading ? (
-        <div className="card skeleton-wrap">
+        <Card className="skeleton-wrap">
           <div className="skeleton-row" />
           <div className="skeleton-row" />
           <div className="skeleton-row" />
-        </div>
+        </Card>
       ) : users.length === 0 ? (
-        <div className="card empty-state">
+        <Card className="empty-state">
           <h3>No users registered</h3>
-        </div>
+        </Card>
       ) : (
-        <div className="card table-wrap">
+        <Card className="table-wrap">
           <table className="table">
             <thead>
               <tr>
@@ -116,25 +118,28 @@ const UsersPage = () => {
               ))}
             </tbody>
           </table>
-        </div>
+        </Card>
       )}
 
       {/* User Creation Modal */}
       {showModal ? (
         <div className="modal-backdrop fade-in">
-          <div className="modal-content card" style={{ maxWidth: '500px' }}>
+          <Card className="modal-content" style={{ maxWidth: '520px' }}>
             <div className="flex-between align-center mb-1">
-              <h3>Register New User</h3>
+              <div>
+                <h3>Register New User</h3>
+                <p className="muted">Add a staff account for the operations portal.</p>
+              </div>
               <button
                 type="button"
                 className="btn btn-ghost"
                 onClick={() => setShowModal(false)}
               >
-                &times;
+                <X size={16} />
               </button>
             </div>
 
-            {formError ? <div className="card error-banner mb-1">{formError}</div> : null}
+            {formError ? <Card className="error-banner mb-1">{formError}</Card> : null}
 
             <form onSubmit={handleRegisterSubmit}>
               <div className="form-group mb-1">
@@ -206,7 +211,7 @@ const UsersPage = () => {
                 </button>
               </div>
             </form>
-          </div>
+          </Card>
         </div>
       ) : null}
     </section>

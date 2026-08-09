@@ -131,7 +131,7 @@ const ProductFormPage = () => {
 
   if (loading) {
     return (
-      <section className="card skeleton-wrap">
+      <section className="card skeleton-wrap page-form-shell">
         <div className="skeleton-row" />
         <div className="skeleton-row" />
         <div className="skeleton-row" />
@@ -140,81 +140,97 @@ const ProductFormPage = () => {
   }
 
   return (
-    <section className="card fade-in">
-      <div className="section-head">
-        <h2>{isEdit ? 'Edit Product' : 'Add Product'}</h2>
+    <section className="page-shell page-form-shell fade-in">
+      <div className="section-head dashboard-head">
+        <div>
+          <h2>{isEdit ? 'Edit Product' : 'Add Product'}</h2>
+          <p className="muted">Manage inventory details in grouped sections.</p>
+        </div>
         <Link to="/products" className="btn btn-ghost">Back</Link>
       </div>
 
-      <form className="form-grid" onSubmit={handleSubmit}>
-        <label className="form-group">
-          <span>Product Image</span>
-          <input
-            type="file"
-            accept="image/*"
-            className="input"
-            onChange={handleImageFileChange}
-            disabled={uploading}
-          />
-          {uploading ? <small className="muted">Uploading image...</small> : null}
-          {formData.imageUrl ? (
-            <div style={{ marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <img
-                src={formData.imageUrl}
-                alt="Product preview"
-                style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '4px' }}
+      <form className="form-layout" onSubmit={handleSubmit}>
+        <section className="card form-section">
+          <div className="section-subhead">
+            <h3>Product Identity</h3>
+            <p className="muted">Core product information and media.</p>
+          </div>
+          <div className="form-grid form-grid-2">
+            <label className="form-group form-group-wide">
+              <span>Product Image</span>
+              <input
+                type="file"
+                accept="image/*"
+                className="input"
+                onChange={handleImageFileChange}
+                disabled={uploading}
               />
-              <small className="muted">Image uploaded!</small>
-            </div>
-          ) : null}
-        </label>
+              {uploading ? <small className="muted">Uploading image...</small> : null}
+              {formData.imageUrl ? (
+                <div className="form-preview-row">
+                  <img src={formData.imageUrl} alt="Product preview" className="form-preview-image" />
+                  <small className="muted">Image uploaded!</small>
+                </div>
+              ) : null}
+            </label>
 
-        <label className="form-group">
-          <span>Name *</span>
-          <input className="input" name="name" value={formData.name} onChange={handleChange} required />
-          {errors.name ? <small className="error-text">{errors.name}</small> : null}
-        </label>
+            <label className="form-group">
+              <span>Name *</span>
+              <input className="input" name="name" value={formData.name} onChange={handleChange} required />
+              {errors.name ? <small className="error-text">{errors.name}</small> : null}
+            </label>
 
-        <label className="form-group">
-          <span>SKU *</span>
-          <input className="input" name="sku" value={formData.sku} onChange={handleChange} required />
-          {errors.sku ? <small className="error-text">{errors.sku}</small> : null}
-        </label>
+            <label className="form-group">
+              <span>SKU *</span>
+              <input className="input" name="sku" value={formData.sku} onChange={handleChange} required />
+              {errors.sku ? <small className="error-text">{errors.sku}</small> : null}
+            </label>
 
-        <label className="form-group">
-          <span>Category *</span>
-          <input className="input" name="category" value={formData.category} onChange={handleChange} required />
-          {errors.category ? <small className="error-text">{errors.category}</small> : null}
-        </label>
+            <label className="form-group">
+              <span>Category *</span>
+              <input className="input" name="category" value={formData.category} onChange={handleChange} required />
+              {errors.category ? <small className="error-text">{errors.category}</small> : null}
+            </label>
+          </div>
+        </section>
 
-        <label className="form-group">
-          <span>Unit Price (₹) *</span>
-          <input className="input" type="number" min="0" step="0.01" name="unitPrice" value={formData.unitPrice} onChange={handleChange} required />
-          {errors.unitPrice ? <small className="error-text">{errors.unitPrice}</small> : null}
-        </label>
+        <section className="card form-section">
+          <div className="section-subhead">
+            <h3>Inventory & Pricing</h3>
+            <p className="muted">Stock thresholds and logistics placement.</p>
+          </div>
+          <div className="form-grid form-grid-2">
+            <label className="form-group">
+              <span>Unit Price (₹) *</span>
+              <input className="input" type="number" min="0" step="0.01" name="unitPrice" value={formData.unitPrice} onChange={handleChange} required />
+              {errors.unitPrice ? <small className="error-text">{errors.unitPrice}</small> : null}
+            </label>
 
-        <label className="form-group">
-          <span>Current Stock</span>
-          <input className="input" type="number" min="0" name="currentStock" value={formData.currentStock} onChange={handleChange} />
-          {errors.currentStock ? <small className="error-text">{errors.currentStock}</small> : null}
-        </label>
+            <label className="form-group">
+              <span>Current Stock</span>
+              <input className="input" type="number" min="0" name="currentStock" value={formData.currentStock} onChange={handleChange} />
+              {errors.currentStock ? <small className="error-text">{errors.currentStock}</small> : null}
+            </label>
 
-        <label className="form-group">
-          <span>Min Stock Alert Threshold</span>
-          <input className="input" type="number" min="0" name="minStockAlert" value={formData.minStockAlert} onChange={handleChange} />
-          {errors.minStockAlert ? <small className="error-text">{errors.minStockAlert}</small> : null}
-        </label>
+            <label className="form-group">
+              <span>Min Stock Alert Threshold</span>
+              <input className="input" type="number" min="0" name="minStockAlert" value={formData.minStockAlert} onChange={handleChange} />
+              {errors.minStockAlert ? <small className="error-text">{errors.minStockAlert}</small> : null}
+            </label>
 
-        <label className="form-group form-group-wide">
-          <span>Warehouse Location</span>
-          <input className="input" name="warehouseLocation" value={formData.warehouseLocation} onChange={handleChange} placeholder="e.g. Aisle 3, Rack B" />
-        </label>
+            <label className="form-group form-group-wide">
+              <span>Warehouse Location</span>
+              <input className="input" name="warehouseLocation" value={formData.warehouseLocation} onChange={handleChange} placeholder="e.g. Aisle 3, Rack B" />
+            </label>
+          </div>
 
-        <div className="form-actions">
-          <button type="submit" className="btn btn-primary" disabled={saving || uploading}>
-            {saving ? 'Saving...' : isEdit ? 'Update Product' : 'Create Product'}
-          </button>
-        </div>
+          <div className="form-actions form-actions-split">
+            <Link to="/products" className="btn btn-ghost">Cancel</Link>
+            <button type="submit" className="btn btn-primary" disabled={saving || uploading}>
+              {saving ? 'Saving...' : isEdit ? 'Update Product' : 'Create Product'}
+            </button>
+          </div>
+        </section>
       </form>
     </section>
   );

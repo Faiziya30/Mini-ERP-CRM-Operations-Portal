@@ -4,6 +4,8 @@ import { getChallanApi, confirmChallanApi, cancelChallanApi, downloadChallanPdfA
 import useToast from '../hooks/useToast';
 import useAuth from '../hooks/useAuth';
 import StatusBadge from '../components/StatusBadge';
+import Card from '../components/Card';
+import { ArrowLeft, Download, Pencil, Printer, XCircle, CheckCircle2 } from 'lucide-react';
 
 
 const ChallanDetailPage = () => {
@@ -100,20 +102,20 @@ const ChallanDetailPage = () => {
 
   if (loading) {
     return (
-      <section className="fade-in">
-        <div className="card skeleton-wrap">
+      <section className="page-shell fade-in">
+        <Card className="skeleton-wrap">
           <div className="skeleton-row" />
           <div className="skeleton-row" />
           <div className="skeleton-row" />
-        </div>
+        </Card>
       </section>
     );
   }
 
   if (error && !challan) {
     return (
-      <section className="fade-in">
-        <div className="card error-banner">{error}</div>
+      <section className="page-shell fade-in">
+        <Card className="error-banner">{error}</Card>
         <Link to="/challans" className="btn btn-ghost mt-1">
           &larr; Back to Challans
         </Link>
@@ -131,18 +133,18 @@ const ChallanDetailPage = () => {
 
 
   return (
-    <section className="fade-in challan-detail-page">
-      <div className="section-head no-print">
+    <section className="page-shell fade-in challan-detail-page">
+      <div className="section-head dashboard-head no-print">
         <div>
           <h2>Sales Challan: {challan.challanNumber}</h2>
           <p className="muted">Detailed dispatch note with snapshot pricing</p>
         </div>
         <div className="actions-cell gap-1">
           <Link to="/challans" className="btn btn-ghost">
-            Back
+            <ArrowLeft size={16} /> Back
           </Link>
           <button type="button" className="btn btn-secondary" onClick={handlePrint}>
-            Print Slip
+            <Printer size={16} /> Print Slip
           </button>
           <button
             type="button"
@@ -150,14 +152,14 @@ const ChallanDetailPage = () => {
             disabled={pdfDownloading}
             onClick={handleDownloadPdf}
           >
-            {pdfDownloading ? 'Downloading...' : '📥 Download PDF'}
+            <Download size={16} /> {pdfDownloading ? 'Downloading...' : 'Download PDF'}
           </button>
 
 
           {challan.status === 'Draft' && canEditOrConfirm ? (
             <>
               <Link to={`/challans/${challan.id}/edit`} className="btn btn-secondary">
-                Edit Draft
+                <Pencil size={16} /> Edit Draft
               </Link>
               <button
                 type="button"
@@ -165,7 +167,7 @@ const ChallanDetailPage = () => {
                 disabled={actionLoading}
                 onClick={handleConfirm}
               >
-                {actionLoading ? 'Confirming...' : 'Confirm Dispatch'}
+                <CheckCircle2 size={16} /> {actionLoading ? 'Confirming...' : 'Confirm Dispatch'}
               </button>
             </>
           ) : null}
@@ -176,16 +178,16 @@ const ChallanDetailPage = () => {
               className="btn btn-ghost btn-danger-text"
               onClick={() => setShowCancelModal(true)}
             >
-              Cancel Challan
+              <XCircle size={16} /> Cancel Challan
             </button>
           ) : null}
         </div>
       </div>
 
-      {error ? <div className="card error-banner mb-1 no-print">{error}</div> : null}
+      {error ? <Card className="error-banner mb-1 no-print">{error}</Card> : null}
 
       {stockErrors.length > 0 ? (
-        <div className="card stock-error-box mb-1 no-print">
+        <Card className="stock-error-box mb-1 no-print">
           <h4 style={{ color: 'var(--color-danger, #e53e3e)', marginBottom: '0.5rem' }}>
             Stock Availability Failure
           </h4>
@@ -201,11 +203,11 @@ const ChallanDetailPage = () => {
               </li>
             ))}
           </ul>
-        </div>
+        </Card>
       ) : null}
 
       {/* Printable Dispatch Document Card */}
-      <div className="card challan-print-document">
+      <Card className="challan-print-document">
         <div className="challan-header-grid mb-2">
           <div>
             <h1 className="brand-title">Mini ERP Operations</h1>
@@ -288,12 +290,12 @@ const ChallanDetailPage = () => {
             </h3>
           </div>
         </div>
-      </div>
+      </Card>
 
       {/* Cancellation Confirmation Modal */}
       {showCancelModal ? (
         <div className="modal-backdrop fade-in">
-          <div className="modal-content card">
+          <Card className="modal-content">
             <h3>Confirm Challan Cancellation</h3>
             <p className="muted mt-1 mb-2">
               {challan.status === 'Confirmed'
@@ -317,7 +319,7 @@ const ChallanDetailPage = () => {
                 {actionLoading ? 'Cancelling...' : 'Yes, Cancel Challan'}
               </button>
             </div>
-          </div>
+          </Card>
         </div>
       ) : null}
     </section>

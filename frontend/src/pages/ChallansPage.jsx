@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { listChallansApi } from '../api/challanApi';
 import { listCustomersApi } from '../api/customerApi';
 import StatusBadge from '../components/StatusBadge';
+import { Eye, Pencil, Filter, Search } from 'lucide-react';
 
 const ChallansPage = () => {
 
@@ -68,8 +69,8 @@ const ChallansPage = () => {
   };
 
   return (
-    <section className="fade-in">
-      <div className="section-head">
+    <section className="page-shell fade-in">
+      <div className="section-head dashboard-head">
         <div>
           <h2>Sales Challans</h2>
           <p className="muted">Draft, confirm, and track dispatch challans.</p>
@@ -77,23 +78,36 @@ const ChallansPage = () => {
         <Link to="/challans/new" className="btn btn-primary">Create Challan</Link>
       </div>
 
-      <div className="card toolbar challan-filter-grid">
-        <select className="input" name="status" value={filters.status} onChange={handleChange}>
-          <option value="">All Status</option>
-          <option value="Draft">Draft</option>
-          <option value="Confirmed">Confirmed</option>
-          <option value="Cancelled">Cancelled</option>
-        </select>
+      <div className="card toolbar toolbar-modern">
+        <div className="toolbar-search">
+          <Search size={16} />
+          <select className="input toolbar-input" name="status" value={filters.status} onChange={handleChange}>
+            <option value="">All Status</option>
+            <option value="Draft">Draft</option>
+            <option value="Confirmed">Confirmed</option>
+            <option value="Cancelled">Cancelled</option>
+          </select>
+        </div>
 
-        <select className="input" name="customerId" value={filters.customerId} onChange={handleChange}>
-          <option value="">All Customers</option>
-          {customers.map((customer) => (
-            <option key={customer.id} value={customer.id}>{customer.name} - {customer.businessName}</option>
-          ))}
-        </select>
+        <div className="toolbar-filter-row">
+          <span className="toolbar-filter-label"><Filter size={14} /> Customer</span>
+          <select className="input" name="customerId" value={filters.customerId} onChange={handleChange}>
+            <option value="">All Customers</option>
+            {customers.map((customer) => (
+              <option key={customer.id} value={customer.id}>{customer.name} - {customer.businessName}</option>
+            ))}
+          </select>
+        </div>
 
-        <input className="input" type="date" name="startDate" value={filters.startDate} onChange={handleChange} />
-        <input className="input" type="date" name="endDate" value={filters.endDate} onChange={handleChange} />
+        <div className="toolbar-filter-row">
+          <span className="toolbar-filter-label">From</span>
+          <input className="input" type="date" name="startDate" value={filters.startDate} onChange={handleChange} />
+        </div>
+
+        <div className="toolbar-filter-row">
+          <span className="toolbar-filter-label">To</span>
+          <input className="input" type="date" name="endDate" value={filters.endDate} onChange={handleChange} />
+        </div>
       </div>
 
       {loading ? (
@@ -130,10 +144,14 @@ const ChallansPage = () => {
                   <td className="num-col font-mono">{challan.totalQuantity} units</td>
                   <td><StatusBadge status={challan.status} index={idx} /></td>
                   <td className="font-mono">{new Date(challan.createdAt).toLocaleDateString()}</td>
-                  <td className="actions-cell">
-                    <Link className="btn btn-ghost btn-sm font-mono" to={`/challans/${challan.id}`}>View</Link>
+                  <td className="actions-cell actions-cell-compact">
+                    <Link className="icon-btn" to={`/challans/${challan.id}`} title="View challan" aria-label="View challan">
+                      <Eye size={16} />
+                    </Link>
                     {challan.status === 'Draft' ? (
-                      <Link className="btn btn-ghost btn-sm font-mono" to={`/challans/${challan.id}/edit`}>Edit</Link>
+                      <Link className="icon-btn" to={`/challans/${challan.id}/edit`} title="Edit challan" aria-label="Edit challan">
+                        <Pencil size={16} />
+                      </Link>
                     ) : null}
                   </td>
                 </tr>
@@ -144,7 +162,7 @@ const ChallansPage = () => {
         </div>
       )}
 
-      <div className="pagination-bar">
+      <div className="pagination-bar pagination-modern">
         <button
           type="button"
           className="btn btn-ghost"
@@ -153,7 +171,7 @@ const ChallansPage = () => {
         >
           Previous
         </button>
-        <span className="muted">Page {meta.page} of {meta.totalPages} • {meta.total} records</span>
+        <span className="pagination-meta">Page {meta.page} of {meta.totalPages} • {meta.total} records</span>
         <button
           type="button"
           className="btn btn-ghost"

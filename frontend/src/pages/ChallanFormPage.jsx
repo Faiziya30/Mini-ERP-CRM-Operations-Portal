@@ -240,8 +240,8 @@ const ChallanFormPage = () => {
   }
 
   return (
-    <section className="fade-in">
-      <div className="section-head">
+    <section className="page-shell page-form-shell fade-in">
+      <div className="section-head dashboard-head">
         <div>
           <h2>{isEdit ? 'Edit Sales Challan' : 'Create Sales Challan'}</h2>
           <p className="muted">
@@ -277,122 +277,135 @@ const ChallanFormPage = () => {
         </div>
       ) : null}
 
-      <form onSubmit={handleSubmitDraft} className="card challan-form">
-        <div className="form-group mb-2">
-          <label className="label">Customer *</label>
-          <select
-            className="input"
-            value={customerId}
-            onChange={(e) => setCustomerId(e.target.value)}
-            required
-          >
-            <option value="">-- Select Customer --</option>
-            {customers.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name} ({c.businessName || 'Individual'}) - {c.mobile}
-              </option>
-            ))}
-          </select>
-        </div>
+      <form onSubmit={handleSubmitDraft} className="form-layout challan-layout">
+        <section className="card form-section form-section-wide">
+          <div className="section-subhead">
+            <h3>Dispatch Context</h3>
+            <p className="muted">Choose the customer before adding line items.</p>
+          </div>
+          <div className="form-grid form-grid-2">
+            <label className="form-group form-group-wide">
+              <span>Customer *</span>
+              <select
+                className="input"
+                value={customerId}
+                onChange={(e) => setCustomerId(e.target.value)}
+                required
+              >
+                <option value="">-- Select Customer --</option>
+                {customers.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name} ({c.businessName || 'Individual'}) - {c.mobile}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+        </section>
 
-        <div className="section-subhead flex-between align-center mb-1">
-          <h3 style={{ fontSize: '1.1rem', fontWeight: 600 }}>Product Items</h3>
-          <button type="button" className="btn btn-secondary btn-sm" onClick={addItemRow}>
-            + Add Item Line
-          </button>
-        </div>
+        <section className="card form-section form-section-wide">
+          <div className="section-subhead flex-between align-center">
+            <div>
+              <h3>Product Items</h3>
+              <p className="muted">Build the challan line by line.</p>
+            </div>
+            <button type="button" className="btn btn-secondary btn-sm" onClick={addItemRow}>
+              + Add Item Line
+            </button>
+          </div>
 
-        <div className="table-wrap mb-2">
-          <table className="table challan-items-table">
-            <thead>
-              <tr>
-                <th style={{ width: '40%' }}>Product</th>
-                <th style={{ width: '15%' }}>Unit Price</th>
-                <th style={{ width: '15%' }}>Qty</th>
-                <th style={{ width: '15%' }}>Line Total</th>
-                <th style={{ width: '15%', textAlign: 'right' }}>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {items.map((item, index) => (
-                <tr key={index}>
-                  <td>
-                    <select
-                      className="input"
-                      value={item.productId}
-                      onChange={(e) => handleProductChange(index, e.target.value)}
-                      required
-                    >
-                      <option value="">-- Select Product --</option>
-                      {products.map((p) => (
-                        <option key={p.id} value={p.id}>
-                          {p.name} (SKU: {p.sku}) [Stock: {p.currentStock}]
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-                  <td>₹{item.unitPrice.toFixed(2)}</td>
-                  <td>
-                    <input
-                      type="number"
-                      className="input"
-                      min="1"
-                      value={item.quantity}
-                      onChange={(e) => handleQuantityChange(index, e.target.value)}
-                      required
-                    />
-                  </td>
-                  <td>₹{(item.quantity * item.unitPrice).toFixed(2)}</td>
-                  <td style={{ textAlign: 'right' }}>
-                    <button
-                      type="button"
-                      className="btn btn-ghost btn-danger-text"
-                      onClick={() => removeItemRow(index)}
-                      title="Remove line"
-                    >
-                      Remove
-                    </button>
-                  </td>
+          <div className="table-wrap mb-2">
+            <table className="table challan-items-table">
+              <thead>
+                <tr>
+                  <th style={{ width: '40%' }}>Product</th>
+                  <th style={{ width: '15%' }}>Unit Price</th>
+                  <th style={{ width: '15%' }}>Qty</th>
+                  <th style={{ width: '15%' }}>Line Total</th>
+                  <th style={{ width: '15%', textAlign: 'right' }}>Action</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {items.map((item, index) => (
+                  <tr key={index}>
+                    <td>
+                      <select
+                        className="input"
+                        value={item.productId}
+                        onChange={(e) => handleProductChange(index, e.target.value)}
+                        required
+                      >
+                        <option value="">-- Select Product --</option>
+                        {products.map((p) => (
+                          <option key={p.id} value={p.id}>
+                            {p.name} (SKU: {p.sku}) [Stock: {p.currentStock}]
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                    <td>₹{item.unitPrice.toFixed(2)}</td>
+                    <td>
+                      <input
+                        type="number"
+                        className="input"
+                        min="1"
+                        value={item.quantity}
+                        onChange={(e) => handleQuantityChange(index, e.target.value)}
+                        required
+                      />
+                    </td>
+                    <td>₹{(item.quantity * item.unitPrice).toFixed(2)}</td>
+                    <td style={{ textAlign: 'right' }}>
+                      <button
+                        type="button"
+                        className="btn btn-ghost btn-danger-text"
+                        onClick={() => removeItemRow(index)}
+                        title="Remove line"
+                      >
+                        Remove
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-        <div className="challan-summary-bar flex-between align-center card-inner mb-2">
-          <div>
-            <span className="muted">Total Line Items: </span>
-            <strong>{items.length}</strong>
+          <div className="challan-summary-bar flex-between align-center card-inner mb-2">
+            <div>
+              <span className="muted">Total Line Items: </span>
+              <strong>{items.length}</strong>
+            </div>
+            <div>
+              <span className="muted">Total Quantity: </span>
+              <strong style={{ fontSize: '1.1rem', color: 'var(--primary)' }}>{totalQuantity} units</strong>
+            </div>
+            <div>
+              <span className="muted">Estimated Total Value: </span>
+              <strong style={{ fontSize: '1.2rem', color: 'var(--color-success, #38a169)' }}>
+                ₹{totalEstimatedAmount.toFixed(2)}
+              </strong>
+            </div>
           </div>
-          <div>
-            <span className="muted">Total Quantity: </span>
-            <strong style={{ fontSize: '1.1rem', color: 'var(--primary)' }}>{totalQuantity} units</strong>
-          </div>
-          <div>
-            <span className="muted">Estimated Total Value: </span>
-            <strong style={{ fontSize: '1.2rem', color: 'var(--color-success, #38a169)' }}>
-              ₹{totalEstimatedAmount.toFixed(2)}
-            </strong>
-          </div>
-        </div>
 
-        <div className="form-actions flex-end gap-1">
-          <button
-            type="submit"
-            className="btn btn-secondary"
-            disabled={submitting}
-          >
-            {submitting ? 'Saving...' : 'Save as Draft'}
-          </button>
-          <button
-            type="button"
-            className="btn btn-primary"
-            disabled={submitting}
-            onClick={handleSubmitAndConfirm}
-          >
-            {submitting ? 'Processing...' : 'Save & Confirm Dispatch'}
-          </button>
-        </div>
+          <div className="form-actions form-actions-split">
+            <button
+              type="submit"
+              className="btn btn-secondary"
+              disabled={submitting}
+            >
+              {submitting ? 'Saving...' : 'Save as Draft'}
+            </button>
+            <button
+              type="button"
+              className="btn btn-primary"
+              disabled={submitting}
+              onClick={handleSubmitAndConfirm}
+            >
+              {submitting ? 'Processing...' : 'Save & Confirm Dispatch'}
+            </button>
+          </div>
+        </section>
       </form>
     </section>
   );

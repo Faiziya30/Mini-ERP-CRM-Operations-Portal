@@ -3,6 +3,8 @@ import { Link, useParams } from 'react-router-dom';
 import { addCustomerFollowUpApi, getCustomerApi } from '../api/customerApi';
 import useToast from '../hooks/useToast';
 import useAuth from '../hooks/useAuth';
+import { ArrowLeft, Pencil, Plus, History } from 'lucide-react';
+import Card from '../components/Card';
 
 const CustomerDetailPage = () => {
   const { id } = useParams();
@@ -67,45 +69,47 @@ const CustomerDetailPage = () => {
 
   if (loading) {
     return (
-      <section className="card skeleton-wrap">
+      <section className="page-shell fade-in">
+        <Card className="skeleton-wrap">
         <div className="skeleton-row" />
         <div className="skeleton-row" />
         <div className="skeleton-row" />
+        </Card>
       </section>
     );
   }
 
   if (error) {
-    return <section className="card error-text">{error}</section>;
+    return <section className="page-shell fade-in"><Card className="error-banner">{error}</Card></section>;
   }
 
   return (
-    <section className="fade-in">
-      <div className="section-head">
+    <section className="page-shell fade-in">
+      <div className="section-head dashboard-head">
         <div>
           <h2>{customer.name}</h2>
           <p className="muted">{customer.businessName} • {customer.customerType}</p>
         </div>
         <div className="actions-cell">
-          <Link to="/customers" className="btn btn-ghost">Back</Link>
+          <Link to="/customers" className="btn btn-ghost"><ArrowLeft size={16} /> Back</Link>
           {canEdit ? (
-            <Link to={`/customers/${customer.id}/edit`} className="btn btn-primary">Edit</Link>
+            <Link to={`/customers/${customer.id}/edit`} className="btn btn-primary"><Pencil size={16} /> Edit</Link>
           ) : null}
         </div>
 
       </div>
 
-      <article className="card detail-grid">
+      <Card className="detail-grid">
         <div><strong>Mobile:</strong> {customer.mobile}</div>
         <div><strong>Email:</strong> {customer.email || '-'}</div>
         <div><strong>GST:</strong> {customer.gstNumber || '-'}</div>
         <div><strong>Status:</strong> <span className={`badge status-${customer.status.toLowerCase()}`}>{customer.status}</span></div>
         <div className="detail-wide"><strong>Address:</strong> {customer.address}</div>
         <div className="detail-wide"><strong>Notes:</strong> {customer.notes || '-'}</div>
-      </article>
+      </Card>
 
       <div className="detail-columns">
-        <article className="card">
+        <Card>
           <h3 style={{ marginBottom: '0.75rem' }}>Add Follow-up</h3>
           <form onSubmit={handleFollowupSubmit}>
             <label className="form-group">
@@ -129,13 +133,14 @@ const CustomerDetailPage = () => {
               />
             </label>
             <button type="submit" className="btn btn-primary" disabled={savingNote}>
+              <Plus size={16} />
               {savingNote ? 'Adding...' : 'Add Note'}
             </button>
           </form>
-        </article>
+        </Card>
 
-        <article className="card">
-          <h3 style={{ marginBottom: '0.75rem' }}>Follow-up Timeline</h3>
+        <Card>
+          <h3 style={{ marginBottom: '0.75rem' }}><History size={16} style={{ marginRight: 6 }} /> Follow-up Timeline</h3>
           {!customer.followUps?.length ? (
             <p className="muted">No follow-up history yet.</p>
           ) : (
@@ -149,7 +154,7 @@ const CustomerDetailPage = () => {
               ))}
             </ul>
           )}
-        </article>
+        </Card>
       </div>
     </section>
   );

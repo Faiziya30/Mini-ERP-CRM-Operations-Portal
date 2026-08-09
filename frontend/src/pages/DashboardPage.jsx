@@ -1,13 +1,18 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  ResponsiveContainer, LineChart, Line, BarChart, Bar,
+  ResponsiveContainer, LineChart, Line, BarChart, Bar, Area,
   XAxis, YAxis, CartesianGrid, Tooltip
 } from 'recharts';
-import { Users, AlertTriangle, FileText, CheckCircle, Plus, ArrowRight } from 'lucide-react';
+import { Users, AlertTriangle, FileText, CheckCircle, Plus, ArrowRight, CalendarRange, TrendingUp, TrendingDown } from 'lucide-react';
 import { getDashboardStatsApi } from '../api/dashboardApi';
 import useAuth from '../hooks/useAuth';
 import StatusBadge from '../components/StatusBadge';
+
+const periodOptions = [
+  { label: '7 Days', value: 7 },
+  { label: '30 Days', value: 30 }
+];
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;
@@ -27,6 +32,7 @@ const CustomTooltip = ({ active, payload, label }) => {
 
 const DashboardPage = () => {
   const { user } = useAuth();
+  const [period, setPeriod] = useState(30);
   const [stats, setStats] = useState({
     totalCustomers: 0,
     lowStockProducts: 0,
@@ -56,23 +62,73 @@ const DashboardPage = () => {
   }, []);
 
   const cards = [
-    { label: 'Total Customers', value: stats.totalCustomers, icon: Users, color: 'indigo', link: '/customers' },
-    { label: 'Low Stock Alerts', value: stats.lowStockProducts, icon: AlertTriangle, color: 'red', link: '/products' },
-    { label: 'Draft Challans', value: stats.draftChallans, icon: FileText, color: 'amber', link: '/challans' },
-    { label: 'Confirmed (Month)', value: stats.confirmedThisMonth, icon: CheckCircle, color: 'green', link: '/challans' }
+    {
+      label: 'Total Customers',
+      value: stats.totalCustomers,
+      icon: Users,
+      color: 'indigo',
+      link: '/customers',
+      hint: 'Active relationships tracked',
+      trend: { label: 'Growing base', direction: 'up' }
+    },
+    {
+      label: 'Low Stock Alerts',
+      value: stats.lowStockProducts,
+      icon: AlertTriangle,
+      color: 'red',
+      link: '/products',
+      hint: 'Requires attention',
+      trend: { label: 'Monitor closely', direction: 'down' }
+    },
+    {
+      label: 'Draft Challans',
+      value: stats.draftChallans,
+      icon: FileText,
+      color: 'amber',
+      link: '/challans',
+      hint: 'Pending dispatch',
+      trend: { label: 'Needs review', direction: 'down' }
+    },
+    {
+      label: 'Confirmed (Month)',
+      value: stats.confirmedThisMonth,
+      icon: CheckCircle,
+      color: 'green',
+      link: '/challans',
+      hint: 'Completed this month',
+      trend: { label: 'Strong flow', direction: 'up' }
+    }
   ];
+
+  const lineTrend = useMemo(() => (stats.stockMovementTrend || []).slice(-period), [period, stats.stockMovementTrend]);
+  const weeklyTrend = useMemo(() => (stats.challansByStatusWeekly || []).slice(-Math.ceil(period / 7)), [period, stats.challansByStatusWeekly]);
 
   return (
     <section className="fade-in">
-      <div className="section-head">
+      <div className="section-head dashboard-head">
         <div>
           <h2>Dashboard</h2>
-          <p className="muted">Overview of your operations</p>
+          <p className="muted">Operational overview for {user?.name || 'your team'}</p>
         </div>
-        <Link to="/challans/new" className="btn btn-primary">
-          <Plus size={16} />
-          New Challan
-        </Link>
+        <div className="section-head-actions">
+          <div className="chip-group">
+            {periodOptions.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                className={`chip ${period === option.value ? 'active' : ''}`}
+                onClick={() => setPeriod(option.value)}
+              >
+                <CalendarRange size={14} />
+                {option.label}
+              </button>
+            ))}
+          </div>
+          <Link to="/challans/new" className="btn btn-primary">
+            <Plus size={16} />
+            New Challan
+          </Link>
+        </div>
       </div>
 
       {error ? <div className="card error-banner mb-2">{error}</div> : null}
@@ -89,18 +145,25 @@ const DashboardPage = () => {
             {cards.map((c) => {
               const Icon = c.icon;
               return (
-                <div key={c.label} className="metric-card">
+                <Link key={c.label} to={c.link} className="metric-card metric-card-link">
                   <div className={`metric-icon ${c.color}`}>
                     <Icon size={22} />
                   </div>
                   <div className="metric-body">
                     <div className="metric-label">{c.label}</div>
                     <div className="metric-value">{c.value}</div>
-                    <Link to={c.link} className="metric-link">
+                    <div className="metric-hint-row">
+                      <span className={`metric-trend ${c.trend.direction}`}>
+                        {c.trend.direction === 'up' ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
+                        {c.trend.label}
+                      </span>
+                      <span className="metric-link">{c.hint}</span>
+                    </div>
+                    <span className="metric-link metric-link-inline">
                       View details <ArrowRight size={12} style={{ verticalAlign: 'middle' }} />
-                    </Link>
+                    </span>
                   </div>
-                </div>
+                </Link>
               );
             })}
           </div>
@@ -108,28 +171,49 @@ const DashboardPage = () => {
           {/* Charts */}
           <div className="charts-grid mb-3">
             <div className="card chart-card chart-wide">
-              <h3 className="chart-title">Stock Movement Trend</h3>
-              <p className="chart-caption">Daily IN vs OUT movements — last 30 days</p>
+              <div className="card-head-row">
+                <div>
+                  <h3 className="chart-title">Stock Movement Trend</h3>
+                  <p className="chart-caption">Daily IN vs OUT movements</p>
+                </div>
+                <span className="chart-caption">Last {period} days</span>
+              </div>
               <div style={{ width: '100%', height: 260 }}>
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={stats.stockMovementTrend || []} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <LineChart data={lineTrend || []} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="stockLine" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="var(--accent)" stopOpacity="1" />
+                        <stop offset="100%" stopColor="var(--accent-hover)" stopOpacity="0.8" />
+                      </linearGradient>
+                      <linearGradient id="stockArea" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="var(--accent)" stopOpacity="0.24" />
+                        <stop offset="100%" stopColor="var(--accent)" stopOpacity="0" />
+                      </linearGradient>
+                    </defs>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-color)" />
                     <XAxis dataKey="date" tick={{ fill: 'var(--text-muted)', fontSize: 11 }} stroke="var(--border-color)" />
                     <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 11 }} stroke="var(--border-color)" />
                     <Tooltip content={<CustomTooltip />} />
-                    <Line type="monotone" dataKey="IN" name="Stock IN" stroke="var(--success)" strokeWidth={2} dot={false} activeDot={{ r: 4 }} />
-                    <Line type="monotone" dataKey="OUT" name="Stock OUT" stroke="var(--danger)" strokeWidth={2} dot={false} activeDot={{ r: 4 }} />
+                    <Area type="monotone" dataKey="IN" stroke="none" fill="url(#stockArea)" />
+                    <Line type="monotone" dataKey="IN" name="Stock IN" stroke="url(#stockLine)" strokeWidth={3} dot={false} activeDot={{ r: 4 }} />
+                    <Line type="monotone" dataKey="OUT" name="Stock OUT" stroke="var(--danger)" strokeWidth={2} dot={false} activeDot={{ r: 4 }} strokeDasharray="5 4" />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
             </div>
 
             <div className="card chart-card">
-              <h3 className="chart-title">Weekly Challans</h3>
-              <p className="chart-caption">Status breakdown — last 6 weeks</p>
+              <div className="card-head-row">
+                <div>
+                  <h3 className="chart-title">Weekly Challans</h3>
+                  <p className="chart-caption">Status breakdown</p>
+                </div>
+                <span className="chart-caption">{weeklyTrend.length} periods</span>
+              </div>
               <div style={{ width: '100%', height: 240 }}>
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={stats.challansByStatusWeekly || []} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <BarChart data={weeklyTrend || []} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-color)" />
                     <XAxis dataKey="week" tick={{ fill: 'var(--text-muted)', fontSize: 11 }} stroke="var(--border-color)" />
                     <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 11 }} stroke="var(--border-color)" />

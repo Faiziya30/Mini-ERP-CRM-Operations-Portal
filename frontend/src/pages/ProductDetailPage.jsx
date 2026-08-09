@@ -4,6 +4,7 @@ import { adjustProductStockApi, getProductApi, getProductStockLogApi } from '../
 import useAuth from '../hooks/useAuth';
 import useToast from '../hooks/useToast';
 import StockAdjustmentModal from '../components/StockAdjustmentModal';
+import { Eye, Pencil, ArrowLeft } from 'lucide-react';
 
 const ProductDetailPage = () => {
   const { id } = useParams();
@@ -65,25 +66,25 @@ const ProductDetailPage = () => {
   }
 
   if (error) {
-    return <section className="card error-text">{error}</section>;
+    return <section className="card error-banner">{error}</section>;
   }
 
   const lowStock = Number(product.currentStock) <= Number(product.minStockAlert);
 
   return (
-    <section className="fade-in">
-      <div className="section-head">
+    <section className="page-shell fade-in">
+      <div className="section-head dashboard-head">
         <div>
           <h2>{product.name}</h2>
           <p className="muted">SKU: {product.sku} • {product.category}</p>
         </div>
         <div className="actions-cell">
-          <Link to="/products" className="btn btn-ghost">Back</Link>
+          <Link to="/products" className="btn btn-ghost"><ArrowLeft size={16} /> Back</Link>
           {canAdjust ? (
             <>
-              <Link to={`/products/${product.id}/edit`} className="btn btn-primary">Edit</Link>
-              <button type="button" className="btn btn-ghost" onClick={() => setStockModalOpen(true)}>
-                Adjust Stock
+              <Link to={`/products/${product.id}/edit`} className="btn btn-primary"><Pencil size={16} /> Edit</Link>
+              <button type="button" className="btn btn-secondary" onClick={() => setStockModalOpen(true)}>
+                <Eye size={16} /> Adjust Stock
               </button>
             </>
           ) : null}

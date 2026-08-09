@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { listProductsApi } from '../api/productApi';
 import useDebounce from '../hooks/useDebounce';
+import { Filter, Pencil, Search, Eye } from 'lucide-react';
 
 const ProductsPage = () => {
   const [filters, setFilters] = useState({ search: '', category: '', lowStock: false });
@@ -50,8 +51,8 @@ const ProductsPage = () => {
   };
 
   return (
-    <section className="fade-in">
-      <div className="section-head">
+    <section className="page-shell fade-in">
+      <div className="section-head dashboard-head">
         <div>
           <h2>Products</h2>
           <p className="muted">Inventory items with live stock visibility and alerts.</p>
@@ -59,24 +60,30 @@ const ProductsPage = () => {
         <Link to="/products/new" className="btn btn-primary">Add Product</Link>
       </div>
 
-      <div className="card toolbar">
-        <input
-          className="input"
-          type="text"
-          name="search"
-          value={filters.search}
-          onChange={handleChange}
-          placeholder="Search by name, SKU, category"
-        />
-        <input
-          className="input"
-          type="text"
-          name="category"
-          value={filters.category}
-          onChange={handleChange}
-          placeholder="Filter by category"
-        />
-        <label className="filter-check">
+      <div className="card toolbar toolbar-modern">
+        <div className="toolbar-search">
+          <Search size={16} />
+          <input
+            className="input toolbar-input"
+            type="text"
+            name="search"
+            value={filters.search}
+            onChange={handleChange}
+            placeholder="Search by name, SKU, category"
+          />
+        </div>
+        <div className="toolbar-filter-row">
+          <span className="toolbar-filter-label"><Filter size={14} /> Category</span>
+          <input
+            className="input"
+            type="text"
+            name="category"
+            value={filters.category}
+            onChange={handleChange}
+            placeholder="Filter by category"
+          />
+        </div>
+        <label className="filter-check chip" style={{ minHeight: '44px' }}>
           <input
             type="checkbox"
             name="lowStock"
@@ -156,9 +163,13 @@ const ProductsPage = () => {
                       {lowStock ? <span className="badge low-stock-badge">Low</span> : null}
                     </td>
                     <td>{product.minStockAlert}</td>
-                    <td className="actions-cell">
-                      <Link className="btn btn-ghost" to={`/products/${product.id}`}>View</Link>
-                      <Link className="btn btn-ghost" to={`/products/${product.id}/edit`}>Edit</Link>
+                    <td className="actions-cell actions-cell-compact">
+                      <Link className="icon-btn" to={`/products/${product.id}`} title="View product" aria-label="View product">
+                        <Eye size={16} />
+                      </Link>
+                      <Link className="icon-btn" to={`/products/${product.id}/edit`} title="Edit product" aria-label="Edit product">
+                        <Pencil size={16} />
+                      </Link>
                     </td>
                   </tr>
                 );
@@ -168,7 +179,7 @@ const ProductsPage = () => {
         </div>
       )}
 
-      <div className="pagination-bar">
+      <div className="pagination-bar pagination-modern">
         <button
           type="button"
           className="btn btn-ghost"
@@ -177,7 +188,7 @@ const ProductsPage = () => {
         >
           Previous
         </button>
-        <span className="muted">Page {meta.page} of {meta.totalPages} • {meta.total} records</span>
+        <span className="pagination-meta">Page {meta.page} of {meta.totalPages} • {meta.total} records</span>
         <button
           type="button"
           className="btn btn-ghost"

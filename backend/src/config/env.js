@@ -2,14 +2,18 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
-const requiredKeys = ['DB_NAME', 'DB_USER', 'DB_HOST', 'DB_PASSWORD', 'JWT_SECRET'];
+// When DATABASE_URL is provided (e.g. Render managed Postgres) the individual
+// DB_* keys are not required.
+const databaseUrl = process.env.DATABASE_URL;
 
-requiredKeys.forEach((key) => {
-  if (!process.env[key]) {
-    // Keep boot resilient in local setup while still signaling missing values.
-    console.warn(`[env] Missing environment variable: ${key}`);
-  }
-});
+if (!databaseUrl) {
+  const requiredKeys = ['DB_NAME', 'DB_USER', 'DB_HOST', 'DB_PASSWORD', 'JWT_SECRET'];
+  requiredKeys.forEach((key) => {
+    if (!process.env[key]) {
+      console.warn(`[env] Missing environment variable: ${key}`);
+    }
+  });
+}
 
 module.exports = {
   nodeEnv: process.env.NODE_ENV || 'development',
@@ -17,6 +21,7 @@ module.exports = {
   frontendOrigin: process.env.FRONTEND_ORIGIN || 'http://localhost:5173',
   jwtSecret: process.env.JWT_SECRET || 'change-me',
   jwtExpiry: process.env.JWT_EXPIRY || '1d',
+  databaseUrl,
   db: {
     name: process.env.DB_NAME || 'mini_erp_crm',
     user: process.env.DB_USER || 'root',

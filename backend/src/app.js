@@ -10,16 +10,19 @@ const path = require('path');
 const app = express();
 
 app.use(helmet({ crossOriginResourcePolicy: false }));
-// Support multiple origins (comma-separated in env) and reflect allowed origins
-const allowedOrigins = (env.frontendOrigin || '').split(',').map((s) => s.trim()).filter(Boolean);
-// Allow frontend origin dynamically in development to avoid CORS preflight mismatches
+// Support multiple origins (comma-separated in env) for production
+const allowedOrigins = (env.frontendOrigin || '')
+  .split(',')
+  .map((s) => s.trim())
+  .filter(Boolean);
+
 app.use(cors({
   origin: (origin, callback) => {
     // allow requests with no origin like curl/postman
     if (!origin) return callback(null, true);
     if (env.nodeEnv === 'development') return callback(null, true);
-    // production: only allow configured origin
-    if (origin === env.frontendOrigin) return callback(null, true);
+    // production: check against all configured origins
+    if (allowedOrigins.includes(origin)) return callback(null, true);
     return callback(new Error('Not allowed by CORS'));
   },
   credentials: true

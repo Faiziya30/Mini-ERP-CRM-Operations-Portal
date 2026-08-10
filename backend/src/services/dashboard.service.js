@@ -12,11 +12,10 @@ const getStats = async () => {
     where: { isDeleted: false }
   });
 
+  // Count products with low stock using raw query for better compatibility
   const lowStockProducts = await Product.count({
     where: sequelize.where(
-      sequelize.col('currentStock'),
-      '<=',
-      sequelize.col('minStockAlert')
+      sequelize.literal('`currentStock` <= `minStockAlert`')
     )
   });
 
@@ -110,12 +109,21 @@ const getStats = async () => {
   const challansByStatusWeekly = Array.from(weeklyMap.values());
 
   // Chart 3: Low Stock Products List (Top 6 ranked by low stock ratio)
+  // Fetch all products and sort in JavaScript to avoid raw literal issues
   const lowStockProductsList = await Product.findAll({
-    order: [
-      [sequelize.literal(`${quoteColumn('currentStock')} - ${quoteColumn('minStockAlert')}`), 'ASC']
-    ],
-    limit: 6
+    where: sequelize.where(
+      sequelize.literal('`currentStock` <= `minStockAlert`')
+    ),
+    limit: 100 // Get more, then sort
   });
+
+  // Sort by stock deficit (currentStock - minStockAlert) in ascending order
+  lowStockProductsList.sort((a, b) => 
+    (a.currentStock - a.minStockAlert) - (b.currentStock - b.minStockAlert)
+  );
+  
+  // Limit to 6 after sorting
+  const sortedLowStockList = lowStockProductsList.slice(0, 6);
 
   return {
     totalCustomers,
@@ -125,7 +133,7 @@ const getStats = async () => {
     recentChallans,
     stockMovementTrend,
     challansByStatusWeekly,
-    lowStockProductsList: lowStockProductsList.map((p) => ({
+    lowStockProductsList: sortedLowStockList.map((p) => ({
       id: p.id,
       name: p.name,
       sku: p.sku,

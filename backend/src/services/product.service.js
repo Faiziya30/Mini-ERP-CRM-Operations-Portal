@@ -64,7 +64,13 @@ const listProducts = async ({ page, limit, search, category, lowStock }) => {
   }
 
   if (isLowStockRequested(lowStock)) {
-    whereClause[Op.and] = [where(col('currentStock'), Op.lte, col('minStockAlert'))];
+    // Filter products with low stock using literal SQL for better MySQL compatibility
+    const lowStockClause = sequelize.where(sequelize.literal('`currentStock` <= `minStockAlert`'));
+    if (whereClause[Op.and]) {
+      whereClause[Op.and].push(lowStockClause);
+    } else {
+      whereClause[Op.and] = [lowStockClause];
+    }
   }
 
   const { count, rows } = await Product.findAndCountAll({
